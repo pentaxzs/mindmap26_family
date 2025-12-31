@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>26년 가족 마인드맵 - 윤후</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#fb923c; /* 오렌지 */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", Segoe UI, Roboto, Arial, "Helvetica Neue", sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(251,146,60,.18), transparent 55%),
+                  radial-gradient(1000px 600px at 80% 20%, rgba(56,189,248,.12), transparent 60%),
+                  var(--bg);
+      overflow:hidden;
+    }
+
+    .topbar{
+      position:fixed;
+      left:16px; right:16px; top:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      z-index:5;
+    }
+    .brand{
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(16,24,38,.72);
+      backdrop-filter: blur(10px);
+      border-radius:14px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      min-width: 260px;
+    }
+    .brand h1{ font-size:14px; margin:0; font-weight:700; letter-spacing:-.2px; }
+    .brand small{ color:var(--muted); font-size:12px }
+
+    .controls{
+      flex:1;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:flex; gap:8px; align-items:center;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(16,24,38,.72);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .pill label{font-size:12px; color:var(--muted)}
+    .pill input{
+      width:220px;
+      padding:8px 10px;
+      background: rgba(15,23,42,.9);
+      color: var(--text);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:10px;
+      outline:none;
+    }
+    .btn{
+      cursor:pointer;
+      user-select:none;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(15,23,42,.92);
+      color:var(--text);
+      padding:9px 10px;
+      border-radius:12px;
+      font-size:12px;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+    }
+    .btn:hover{border-color: rgba(251,146,60,.45); background: rgba(30,41,59,.92)}
+    .btn:active{transform: translateY(1px)}
+
+    .hint{
+      position: fixed;
+      left: 16px;
+      bottom: 14px;
+      z-index: 5;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(16,24,38,.62);
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 10px 12px;
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      max-width: 460px;
+      line-height: 1.4;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(15,23,42,.9);
+      color: var(--text);
+      display:inline-block;
+      margin: 0 2px;
+    }
+
+    #viewport{ position:absolute; inset:0; padding-top: 64px; }
+    svg{ width:100%; height:100%; }
+    .link{
+      stroke: rgba(148,163,184,.45);
+      stroke-width: 2.2;
+      fill: none;
+    }
+
+    .node-card{
+      width: 260px;
+      padding: 12px 12px 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(16,24,38,.92), rgba(15,23,42,.92));
+      box-shadow: 0 16px 35px rgba(0,0,0,.35);
+      color: var(--text);
+      position: relative;
+      overflow:hidden;
+    }
+    .node-card::before{
+      content:"";
+      position:absolute; inset:-1px;
+      border-radius: 18px;
+      background: radial-gradient(400px 140px at 20% 0%, rgba(251,146,60,.16), transparent 60%),
+                  radial-gradient(320px 140px at 80% 0%, rgba(56,189,248,.12), transparent 60%);
+      pointer-events:none;
+    }
+    .node-head{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+    .badge{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(251,146,60,.14);
+      border: 1px solid rgba(251,146,60,.35);
+      flex: 0 0 auto;
+      font-size: 16px;
+    }
+    .title{
+      margin:0;
+      font-weight:800;
+      letter-spacing:-.3px;
+      line-height:1.15;
+      font-size: 14px;
+    }
+    .subtitle{
+      margin:4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.25;
+    }
+    .meta{
+      margin-top: 10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      position:relative;
+      z-index:1;
+    }
+    .chip{
+      font-size: 11px;
+      color: var(--text);
+      background: rgba(31,41,55,.72);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .chip.accent{
+      background: rgba(251,146,60,.12);
+      border-color: rgba(251,146,60,.35);
+    }
+
+    .node-card.selected{
+      outline: 2px solid rgba(251,146,60,.55);
+      box-shadow: 0 20px 45px rgba(0,0,0,.45);
+    }
+    .highlight{ outline: 2px solid rgba(56,189,248,.65); }
+
+    .fold{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+    .fold button{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(15,23,42,.92);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+    .fold button:hover{ border-color: rgba(251,146,60,.45); }
+
+    @media (max-width: 720px){
+      .brand{min-width: 0}
+      .pill input{width: 140px}
+      .hint{max-width: calc(100vw - 32px)}
+      .node-card{width: 240px}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <h1>26년 가족 마인드맵</h1>
+      <small>윤후 · 인터랙티브</small>
+    </div>
+
+    <div class="controls">
+      <div class="pill">
+        <label for="q">검색</label>
+        <input id="q" type="text" placeholder="예: 다이어트, 영어, 아빠영화관..." />
+      </div>
+      <button class="btn" id="expandAll">전체 펼치기</button>
+      <button class="btn" id="collapseAll">전체 접기</button>
+      <button class="btn" id="resetView">뷰 리셋</button>
+    </div>
+  </div>
+
+  <div id="viewport">
+    <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div class="hint">
+    🖱️ 드래그로 이동 · 휠로 줌 · 노드의 <span class="kbd">접기/펴기</span> 버튼으로 가지 제어 · 검색하면 해당 노드가 하이라이트됨
+  </div>
+
+  <script>
+    // -----------------------------
+    // Data (윤후 마인드맵)
+    // -----------------------------
+    const data = {
+      title: "윤후",
+      note: "2026",
+      icon: "🧒",
+      children: [
+        {
+          title: "건강",
+          icon: "💪",
+          chips: ["운동", "간식", "체중"],
+          children: [
+            {
+              title: "농구다니기",
+              icon: "🏀",
+              children: [
+                { title: "친구랑 농구 많이 해보기", icon: "🤝" },
+              ],
+            },
+            { title: "간식줄이기", icon: "🍪" },
+            { title: "다이어트하기 (50kg 이하로 빼기)", icon: "⚖️", chips: ["50kg 이하"] },
+          ],
+        },
+        {
+          title: "돈",
+          icon: "💰",
+          chips: ["기부", "저축"],
+          children: [
+            { title: "기부하기 (1만원)", icon: "❤️", chips: ["10,000원"] },
+            { title: "40만원 다시 모으기", icon: "🐷", chips: ["400,000원"] },
+          ],
+        },
+        {
+          title: "공부",
+          icon: "📚",
+          chips: ["습관", "영어", "글씨"],
+          children: [
+            {
+              title: "글씨 잘쓰기",
+              icon: "✍️",
+              children: [
+                { title: "수학식 잘쓰기", icon: "➗" },
+                { title: "글씨 잘쓰기", icon: "📝" },
+              ],
+            },
+            { title: "공부로 엄마와 싸우지 않기", icon: "🕊️" },
+            {
+              title: "영어",
+              icon: "🇬🇧",
+              children: [
+                { title: "영어단어 100점 많이 받기", icon: "💯" },
+                { title: "영어 레벨업", icon: "⬆️" },
+              ],
+            },
+          ],
+        },
+        {
+          title: "놀기",
+          icon: "🕹️",
+          chips: ["약속", "다른 놀이", "규칙"],
+          children: [
+            {
+              title: "약속 잘 지키기",
+              icon: "⏰",
+              children: [
+                { title: "엄마랑 약속한 시간 지키기", icon: "📌" },
+              ],
+            },
+            { title: "게임 외 다른 놀이하기", icon: "🎲" },
+            { title: "핫스팟 켜주지 않기", icon: "📶" },
+          ],
+        },
+        {
+          title: "가족",
+          icon: "👨‍👩‍👦‍👦",
+          chips: ["다툼 줄이기", "응원", "규칙"],
+          children: [
+            { title: "엄마/아빠랑 다투지 않기", icon: "🤝" },
+            { title: "형이랑 다투지 않기", icon: "🧡" },
+            { title: "여행 참기", icon: "🛑" },
+            { title: "형 응원해주기", icon: "📣" },
+            {
+              title: "아빠영화관",
+              icon: "🎬",
+              children: [
+                { title: "재미있는 영화선택", icon: "⭐" },
+                { title: "과자도 팔기", icon: "🍿" },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    // -----------------------------
+    // Renderer (same as others)
+    // -----------------------------
+    const svg = document.getElementById("svg");
+    const qInput = document.getElementById("q");
+    const expandAllBtn = document.getElementById("expandAll");
+    const collapseAllBtn = document.getElementById("collapseAll");
+    const resetViewBtn = document.getElementById("resetView");
+
+    let nodes = [];
+    let links = [];
+    let selectedId = null;
+    let highlightIds = new Set();
+
+    // Pan/zoom
+    let view = { x: 0, y: 0, k: 1 };
+    let isPanning = false;
+    let panStart = { x: 0, y: 0, vx: 0, vy: 0 };
+
+    const NODE_W = 260;
+    const NODE_H = 92;
+    const R_STEP = 280; // spacing
+
+    function uid() { return Math.random().toString(36).slice(2, 10); }
+
+    function enrichTree(root, parent=null, depth=0, path="") {
+      const id = uid();
+      const node = {
+        id,
+        title: root.title,
+        note: root.note || "",
+        icon: root.icon || "•",
+        chips: root.chips || [],
+        parentId: parent ? parent.id : null,
+        depth,
+        path: path ? `${path} › ${root.title}` : root.title,
+        collapsed: root.collapsed || false,
+        children: (root.children || []).map(ch => enrichTree(ch, { id }, depth+1, path ? `${path} › ${root.title}` : root.title)),
+        x: 0, y: 0,
+        branchIndex: 0,
+      };
+      return node;
+    }
+
+    function flattenVisible(node, arr=[]) {
+      arr.push(node);
+      if (!node.collapsed && node.children) {
+        for (const ch of node.children) flattenVisible(ch, arr);
+      }
+      return arr;
+    }
+
+    function buildLinks(visibleNodes) {
+      const byId = new Map(visibleNodes.map(n => [n.id, n]));
+      const l = [];
+      for (const n of visibleNodes) {
+        if (n.parentId && byId.has(n.parentId)) {
+          l.push({ source: byId.get(n.parentId), target: n });
+        }
+      }
+      return l;
+    }
+
+    function countLeaves(node) {
+      if (!node.children || node.children.length === 0) return 1;
+      if (node.collapsed) return 1;
+      return node.children.reduce((sum, ch) => sum + countLeaves(ch), 0);
+    }
+
+    function nodeHeight(n){
+      const chips = (n.depth===0 ? 2 : 0) + (n.chips ? n.chips.length : 0);
+      const rows = Math.ceil(chips / 3);
+      return NODE_H + rows * 22;
+    }
+
+    // Collision-avoid layout
+    function layout(root) {
+      const visible = flattenVisible(root, []);
+
+      const topChildren = root.children || [];
+      const leafCounts = topChildren.map(ch => countLeaves(ch));
+      const totalLeaves = leafCounts.reduce((a,b)=>a+b, 0) || 1;
+
+      let angleStart = -Math.PI * 0.85;
+      const angleSpan = Math.PI * 1.7;
+
+      const branchAngles = [];
+      for (let i=0;i<topChildren.length;i++){
+        const portion = leafCounts[i] / totalLeaves;
+        const a0 = angleStart;
+        const a1 = angleStart + angleSpan * portion;
+        branchAngles.push({ a0, a1 });
+        angleStart = a1;
+      }
+
+      root.x = 0; root.y = 0;
+      root.branchIndex = -1;
+
+      for (let i=0;i<topChildren.length;i++){
+        placeBranch(topChildren[i], branchAngles[i].a0, branchAngles[i].a1, 1, i);
+      }
+
+      function placeBranch(node, a0, a1, depth, branchIndex){
+        node.branchIndex = branchIndex;
+        const mid = (a0 + a1) / 2;
+        const r = depth * R_STEP;
+        node.x = Math.cos(mid) * r;
+        node.y = Math.sin(mid) * r;
+
+        if (!node.children || node.children.length === 0 || node.collapsed) return;
+
+        const leaves = node.children.map(ch => countLeaves(ch));
+        const tot = leaves.reduce((a,b)=>a+b,0) || 1;
+        let cur = a0;
+        for (let j=0;j<node.children.length;j++){
+          const span = (a1 - a0) * (leaves[j]/tot);
+          placeBranch(node.children[j], cur, cur + span, depth+1, branchIndex);
+          cur += span;
+        }
+      }
+
+      const byBranch = new Map();
+      for (const n of visible) {
+        const b = n.branchIndex ?? -1;
+        if (!byBranch.has(b)) byBranch.set(b, []);
+        byBranch.get(b).push(n);
+      }
+
+      const ITER = 18;
+      const PADDING = 28;
+      const CENTER_PULL = 0.02;
+
+      for (let it = 0; it < ITER; it++) {
+        for (const [b, arr] of byBranch.entries()) {
+          const list = arr.filter(n => n.depth !== 0);
+          for (let i = 0; i < list.length; i++) {
+            for (let j = i + 1; j < list.length; j++) {
+              const a = list[i], c = list[j];
+              const ra = Math.sqrt((NODE_W/2)**2 + (nodeHeight(a)/2)**2) + PADDING;
+              const rc = Math.sqrt((NODE_W/2)**2 + (nodeHeight(c)/2)**2) + PADDING;
+              const minDist = ra + rc;
+
+              let dx = c.x - a.x;
+              let dy = c.y - a.y;
+              let dist = Math.hypot(dx, dy);
+
+              if (dist < 0.0001) {
+                dx = (Math.random() - 0.5) * 0.01;
+                dy = (Math.random() - 0.5) * 0.01;
+                dist = Math.hypot(dx, dy);
+              }
+
+              if (dist < minDist) {
+                const push = (minDist - dist) * 0.5;
+                const ux = dx / dist;
+                const uy = dy / dist;
+                a.x -= ux * push; a.y -= uy * push;
+                c.x += ux * push; c.y += uy * push;
+              }
+            }
+          }
+        }
+
+        for (const n of visible) {
+          if (n.depth === 0) continue;
+          const rTarget = n.depth * R_STEP;
+          const rNow = Math.hypot(n.x, n.y) || 1;
+          const t = (rTarget - rNow) * CENTER_PULL;
+          n.x += (n.x / rNow) * t;
+          n.y += (n.y / rNow) * t;
+        }
+      }
+
+      return visible;
+    }
+
+    function makeChip(container, text, accent=false){
+      const span = document.createElement("span");
+      span.className = "chip" + (accent ? " accent" : "");
+      span.textContent = text;
+      container.appendChild(span);
+    }
+
+    function render() {
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+      const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+      g.setAttribute("id","gMain");
+      g.setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`);
+      svg.appendChild(g);
+
+      nodes = layout(tree);
+      links = buildLinks(nodes);
+
+      for (const l of links) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+        path.setAttribute("class","link");
+        const x1 = l.source.x, y1 = l.source.y;
+        const x2 = l.target.x, y2 = l.target.y;
+        const dx = (x2 - x1) * 0.35;
+        const dy = (y2 - y1) * 0.35;
+        path.setAttribute("d", `M ${x1} ${y1} C ${x1+dx} ${y1+dy}, ${x2-dx} ${y2-dy}, ${x2} ${y2}`);
+        g.appendChild(path);
+      }
+
+      for (const n of nodes) {
+        const fo = document.createElementNS("http://www.w3.org/2000/svg","foreignObject");
+        const w = NODE_W;
+        const h = nodeHeight(n);
+        fo.setAttribute("x", n.x - w/2);
+        fo.setAttribute("y", n.y - h/2);
+        fo.setAttribute("width", w);
+        fo.setAttribute("height", h);
+
+        const div = document.createElement("div");
+        div.className = "node-card";
+        if (n.id === selectedId) div.classList.add("selected");
+        if (highlightIds.has(n.id)) div.classList.add("highlight");
+
+        const head = document.createElement("div");
+        head.className = "node-head";
+
+        const badge = document.createElement("div");
+        badge.className = "badge";
+        badge.textContent = n.icon || "•";
+
+        const textWrap = document.createElement("div");
+        textWrap.style.minWidth = "0";
+
+        const title = document.createElement("p");
+        title.className = "title";
+        title.textContent = n.title;
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "subtitle";
+        subtitle.textContent = n.note ? n.note : (n.depth===0 ? "2026" : n.path);
+
+        textWrap.appendChild(title);
+        textWrap.appendChild(subtitle);
+
+        const fold = document.createElement("div");
+        fold.className = "fold";
+
+        if (n.children && n.children.length > 0) {
+          const btn = document.createElement("button");
+          btn.textContent = n.collapsed ? "펼치기" : "접기";
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            n.collapsed = !n.collapsed;
+            render();
+          });
+          fold.appendChild(btn);
+        }
+
+        head.appendChild(badge);
+        head.appendChild(textWrap);
+        head.appendChild(fold);
+        div.appendChild(head);
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        if (n.depth === 0) {
+          makeChip(meta, "건강·돈·공부·놀기·가족", true);
+          makeChip(meta, "드래그/줌/검색 가능", false);
+        }
+        for (const c of (n.chips || [])) makeChip(meta, c, /\/|회|월|번|kg|원|100|레벨|40/i.test(c));
+
+        div.appendChild(meta);
+        div.addEventListener("click", () => { selectedId = n.id; render(); });
+
+        fo.appendChild(div);
+        g.appendChild(fo);
+      }
+    }
+
+    function setTransform(){
+      const g = document.getElementById("gMain");
+      if (g) g.setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`);
+    }
+
+    svg.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const { offsetX, offsetY, deltaY } = e;
+      const scaleFactor = Math.exp(-deltaY * 0.0012);
+      const k0 = view.k;
+      const k1 = clamp(k0 * scaleFactor, 0.35, 2.2);
+
+      const cx = offsetX, cy = offsetY;
+      view.x = cx - (cx - view.x) * (k1 / k0);
+      view.y = cy - (cy - view.y) * (k1 / k0);
+      view.k = k1;
+      setTransform();
+    }, { passive:false });
+
+    svg.addEventListener("mousedown", (e) => {
+      if (e.target.closest && e.target.closest(".node-card")) return;
+      isPanning = true;
+      panStart = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
+    });
+    window.addEventListener("mousemove", (e) => {
+      if (!isPanning) return;
+      view.x = panStart.vx + (e.clientX - panStart.x);
+      view.y = panStart.vy + (e.clientY - panStart.y);
+      setTransform();
+    });
+    window.addEventListener("mouseup", () => { isPanning = false; });
+
+    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+    function resetView(){
+      const rect = svg.getBoundingClientRect();
+      view.k = 1;
+      view.x = rect.width/2;
+      view.y = rect.height/2 + 40;
+      setTransform();
+    }
+
+    function walk(node, fn){
+      fn(node);
+      if (node.children) node.children.forEach(ch => walk(ch, fn));
+    }
+    function collapseAll(){
+      walk(tree, n => { if (n.depth>0) n.collapsed = true; });
+      tree.collapsed = false;
+      render();
+    }
+    function expandAll(){
+      walk(tree, n => { n.collapsed = false; });
+      render();
+    }
+
+    function normalize(s){ return (s||"").toLowerCase(); }
+
+    function findById(node, id){
+      if (node.id === id) return node;
+      if (!node.children) return null;
+      for (const ch of node.children){
+        const r = findById(ch, id);
+        if (r) return r;
+      }
+      return null;
+    }
+    function expandAncestors(id){
+      const target = findById(tree, id);
+      if (!target) return;
+      let cur = target;
+      while (cur && cur.parentId) {
+        const p = findById(tree, cur.parentId);
+        if (p) p.collapsed = false;
+        cur = p;
+      }
+    }
+    function search(query){
+      highlightIds.clear();
+      const q = normalize(query).trim();
+      if (!q) { render(); return; }
+
+      const all = [];
+      (function flatAll(n){ all.push(n); (n.children||[]).forEach(flatAll); })(tree);
+
+      for (const n of all) {
+        const hay = normalize([n.title, n.path, ...(n.chips||[])].join(" "));
+        if (hay.includes(q)) {
+          highlightIds.add(n.id);
+          expandAncestors(n.id);
+        }
+      }
+      render();
+    }
+
+    const tree = enrichTree(data);
+
+    window.addEventListener("resize", () => { resetView(); render(); });
+
+    expandAllBtn.addEventListener("click", expandAll);
+    collapseAllBtn.addEventListener("click", collapseAll);
+    resetViewBtn.addEventListener("click", () => { resetView(); render(); });
+
+    qInput.addEventListener("input", (e) => search(e.target.value));
+
+    resetView();
+    render();
+  </script>
+</body>
+</html>
