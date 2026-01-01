@@ -128,10 +128,7 @@
     </div>
 
     <div class="controls">
-      <div class="pill">
-        <label for="q">검색</label>
-        <input id="q" type="text" placeholder="예: 식단, 대출, 설명회, 마라톤..." />
-      </div>
+      <!-- 검색 UI 제거 -->
       <button class="btn" id="expandAll">펼치기</button>
       <button class="btn" id="collapseAll">접기</button>
       <button class="btn" id="resetView">리셋</button>
@@ -240,17 +237,17 @@
     const svg = document.getElementById("svg");
     const isMobile = window.matchMedia('(pointer:coarse)').matches || window.matchMedia('(max-width: 560px)').matches;
 
-    const qInput = document.getElementById("q");
     const expandAllBtn = document.getElementById("expandAll");
     const collapseAllBtn = document.getElementById("collapseAll");
     const resetViewBtn = document.getElementById("resetView");
 
     let selectedId = null;
+    // 검색 하이라이트는 더 이상 사용되지 않지만, 렌더 로직을 건드리지 않기 위해 빈 Set 유지
     let highlightIds = new Set();
 
     let view = { x: 0, y: 0, k: 1 };
 
-    // yoonhoo 스타일과 동일한 카드 렌더(줌/이동 시 카드도 같이 움직이게)
+    // 노드 크기(아빠 파일과 동일 계열)
     const NODE_W = 310;
     const NODE_H_BASE = 78;
     const CHIP_H = 18;
@@ -440,7 +437,7 @@
         ng.style.cursor = "pointer";
 
         const isSelected = (n.id === selectedId);
-        const isHighlight = highlightIds.has(n.id);
+        const isHighlight = highlightIds.has(n.id); // 검색 기능 제거로 항상 false
 
         ng.appendChild(el("rect", {
           x:"0", y:"0", width:String(NODE_W), height:String(h),
@@ -499,7 +496,7 @@
             const col = i % perRow;
             const cx = 12 + col*(chipW + CHIP_PAD);
             const cy = 58 + row*(CHIP_H + 6);
-            const accent = /≤|kg|원|,|회|월|번|1년|대출|알바|책|권/i.test(c);
+            const accent = /≤|kg|원|,|회|월|번|km|분|주/i.test(c);
 
             const chipRect = el("rect", {
               x:String(cx), y:String(cy),
@@ -526,14 +523,15 @@
           });
         }
 
-        // 카드 내부 접기/펼치기 버튼 없음(요청사항)
+        // 카드 내부 접기/펼치기 버튼은 제거(요청사항)
         ng.addEventListener("click", () => { selectedId = n.id; render(); });
+
         g.appendChild(ng);
       }
     }
 
     // -----------------------------
-    // Search / expand-collapse
+    // expand-collapse
     // -----------------------------
     function walk(node, fn){
       fn(node);
@@ -541,7 +539,7 @@
     }
     function collapseAll(){
       walk(tree, n => { if (n.depth>0) n.collapsed = true; });
-      tree.collapsed = false; // 루트는 항상 보이게
+      tree.collapsed = false;
       render();
     }
     function expandAll(){
@@ -549,49 +547,11 @@
       render();
     }
 
-    function normalize(s){ return (s||"").toLowerCase(); }
-    function findById(node, id){
-      if (node.id === id) return node;
-      for (const ch of (node.children||[])){
-        const r = findById(ch, id);
-        if (r) return r;
-      }
-      return null;
-    }
-    function expandAncestors(id){
-      const target = findById(tree, id);
-      if (!target) return;
-      let cur = target;
-      while (cur && cur.parentId) {
-        const p = findById(tree, cur.parentId);
-        if (p) p.collapsed = false;
-        cur = p;
-      }
-    }
-    function search(query){
-      highlightIds.clear();
-      const q = normalize(query).trim();
-      if (!q) { render(); return; }
-
-      const all = [];
-      (function flatAll(n){ all.push(n); (n.children||[]).forEach(flatAll); })(tree);
-
-      for (const n of all) {
-        const hay = normalize([n.title, n.path, ...(n.chips||[])].join(" "));
-        if (hay.includes(q)) {
-          highlightIds.add(n.id);
-          expandAncestors(n.id);
-        }
-      }
-      render();
-    }
-
     // -----------------------------
-    // Pan / Zoom (iPhone Chrome 포함)
+    // Pan / Zoom (아빠와 동일)
     // -----------------------------
     function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
-    // desktop wheel zoom
     svg.addEventListener("wheel", (e) => {
       e.preventDefault();
       const rect = svg.getBoundingClientRect();
@@ -608,7 +568,6 @@
       setTransform();
     }, { passive:false });
 
-    // pointer (pan + pinch)
     const activePtrs = new Map();
     let panStart = null;
     let pinchState = null;
@@ -678,7 +637,7 @@
     svg.addEventListener("pointerup", endPointer, { passive:false });
     svg.addEventListener("pointercancel", endPointer, { passive:false });
 
-    // touch fallback (iOS 안전망)
+    // Touch fallback (iOS 안전망)
     let tPan = null, tPinch = null;
     function getTouchMid(t1, t2){
       const rect = svg.getBoundingClientRect();
@@ -749,7 +708,6 @@
     expandAllBtn.addEventListener("click", expandAll);
     collapseAllBtn.addEventListener("click", collapseAll);
     resetViewBtn.addEventListener("click", () => { resetView(); render(); });
-    qInput.addEventListener("input", (e) => search(e.target.value));
 
     resetView();
     render();

@@ -128,10 +128,7 @@
     </div>
 
     <div class="controls">
-      <div class="pill">
-        <label for="q">검색</label>
-        <input id="q" type="text" placeholder="예: 러닝, 일본어, 여행, 배당..." />
-      </div>
+      <!-- 검색 UI 제거 -->
       <button class="btn" id="expandAll">펼치기</button>
       <button class="btn" id="collapseAll">접기</button>
       <button class="btn" id="resetView">리셋</button>
@@ -259,12 +256,14 @@
     const svg = document.getElementById("svg");
     const isMobile = window.matchMedia('(pointer:coarse)').matches || window.matchMedia('(max-width: 560px)').matches;
 
-    const qInput = document.getElementById("q");
+    // 검색 입력(q) 관련 코드 제거
+
     const expandAllBtn = document.getElementById("expandAll");
     const collapseAllBtn = document.getElementById("collapseAll");
     const resetViewBtn = document.getElementById("resetView");
 
     let selectedId = null;
+    // 검색 하이라이트는 더 이상 사용되지 않지만, 렌더 로직을 건드리지 않기 위해 빈 Set 유지
     let highlightIds = new Set();
 
     let view = { x: 0, y: 0, k: 1 };
@@ -459,7 +458,7 @@
         ng.style.cursor = "pointer";
 
         const isSelected = (n.id === selectedId);
-        const isHighlight = highlightIds.has(n.id);
+        const isHighlight = highlightIds.has(n.id); // 검색 기능 제거로 항상 false
 
         ng.appendChild(el("rect", {
           x:"0", y:"0", width:String(NODE_W), height:String(h),
@@ -553,7 +552,7 @@
     }
 
     // -----------------------------
-    // Search / expand-collapse
+    // expand-collapse
     // -----------------------------
     function walk(node, fn){
       fn(node);
@@ -566,43 +565,6 @@
     }
     function expandAll(){
       walk(tree, n => { n.collapsed = false; });
-      render();
-    }
-
-    function normalize(s){ return (s||"").toLowerCase(); }
-    function findById(node, id){
-      if (node.id === id) return node;
-      for (const ch of (node.children||[])){
-        const r = findById(ch, id);
-        if (r) return r;
-      }
-      return null;
-    }
-    function expandAncestors(id){
-      const target = findById(tree, id);
-      if (!target) return;
-      let cur = target;
-      while (cur && cur.parentId) {
-        const p = findById(tree, cur.parentId);
-        if (p) p.collapsed = false;
-        cur = p;
-      }
-    }
-    function search(query){
-      highlightIds.clear();
-      const q = normalize(query).trim();
-      if (!q) { render(); return; }
-
-      const all = [];
-      (function flatAll(n){ all.push(n); (n.children||[]).forEach(flatAll); })(tree);
-
-      for (const n of all) {
-        const hay = normalize([n.title, n.path, ...(n.chips||[])].join(" "));
-        if (hay.includes(q)) {
-          highlightIds.add(n.id);
-          expandAncestors(n.id);
-        }
-      }
       render();
     }
 
@@ -767,7 +729,8 @@
     expandAllBtn.addEventListener("click", expandAll);
     collapseAllBtn.addEventListener("click", collapseAll);
     resetViewBtn.addEventListener("click", () => { resetView(); render(); });
-    qInput.addEventListener("input", (e) => search(e.target.value));
+
+    // 검색 input 이벤트 제거
 
     resetView();
     render();
