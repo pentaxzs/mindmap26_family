@@ -62,15 +62,6 @@
       border-color:rgba(251,146,60,.6);
     }
 
-    select{
-      background:var(--panel2);
-      color:var(--text);
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:8px 12px;
-      font-size:12px;
-    }
-
     #viewport{
       position:absolute;
       inset:72px 0 0 0;
@@ -86,20 +77,13 @@
 <body>
 
   <div class="topbar">
-    <div class="brand">26년 가족 마인드맵</div>
+    <div class="brand">26년 계획</div>
 
     <div class="controls">
       <button class="tab active" data-key="father">아빠</button>
       <button class="tab" data-key="mom">엄마</button>
       <button class="tab" data-key="yoonwan">윤완</button>
       <button class="tab" data-key="yoonhoo">윤후</button>
-
-      <select id="picker">
-        <option value="father">아빠</option>
-        <option value="mom">엄마</option>
-        <option value="yoonwan">윤완</option>
-        <option value="yoonhoo">윤후</option>
-      </select>
     </div>
   </div>
 
@@ -117,17 +101,19 @@
 
   const frame = document.getElementById("frame");
   const tabs = document.querySelectorAll(".tab");
-  const picker = document.getElementById("picker");
 
   function setActive(key){
     frame.src = MAPS[key];
-    tabs.forEach(t => t.classList.toggle("active", t.dataset.key===key));
-    picker.value = key;
+    tabs.forEach(t =>
+      t.classList.toggle("active", t.dataset.key === key)
+    );
   }
 
-  tabs.forEach(t => t.onclick = () => setActive(t.dataset.key));
-  picker.onchange = () => setActive(picker.value);
+  tabs.forEach(t => {
+    t.addEventListener("click", () => setActive(t.dataset.key));
+  });
 
+  // 최초 로드 시: 아빠 탭 + father 맵
   setActive("father");
 </script>
 </body>
