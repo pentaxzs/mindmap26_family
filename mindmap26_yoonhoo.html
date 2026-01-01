@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
-  <title>26년 가족 마인드맵 - 윤후 (SVG 최종/아이폰Chrome 버튼OK)</title>
+  <title>26년 가족 마인드맵 - 윤후</title>
   <style>
     :root{
       --bg:#0b0f14;
@@ -124,7 +124,7 @@
   <div class="topbar">
     <div class="brand">
       <h1>26년 가족 마인드맵</h1>
-      <small>윤후 · 아이폰 Chrome 버튼/줌/이동 OK</small>
+      <small>윤후 · 카드버튼 제거 / 상단 전체 접기·펼치기 유지</small>
     </div>
 
     <div class="controls">
@@ -132,9 +132,9 @@
         <label for="q">검색</label>
         <input id="q" type="text" placeholder="예: 농구, 40만원, 영어, 약속..." />
       </div>
-      <button class="btn" id="expandAll">전체 펼치기</button>
-      <button class="btn" id="collapseAll">전체 접기</button>
-      <button class="btn" id="resetView">뷰 리셋</button>
+      <button class="btn" id="expandAll">펼치기</button>
+      <button class="btn" id="collapseAll">접기</button>
+      <button class="btn" id="resetView">리셋</button>
     </div>
   </div>
 
@@ -143,7 +143,7 @@
   </div>
 
   <div class="hint">
-    📱 한 손가락 드래그로 이동 · 두 손가락 핀치로 줌 · 노드 “접기/펴기” 탭 가능(아이폰 Chrome 대응)
+    📱 한 손가락 드래그로 이동 · 두 손가락 핀치로 줌 · 상단 버튼으로만 전체 접기/펼치기
   </div>
 
   <script>
@@ -155,41 +155,43 @@
       note: "2026",
       icon: "🧒",
       children: [
-        { title: "건강", icon: "💪", chips:["운동","습관"], children: [
-          { title:"농구다니기", icon:"🏀", children:[{ title:"친구랑 농구 많이 해보기", icon:"🤝" }]},
-          { title:"간식줄이기", icon:"🍪" },
-          { title:"다이어트하기 (50kg 이하로 빼기)", icon:"⚖️", chips:["≤ 50kg"] },
-        ]},
-        { title: "돈", icon: "💰", chips:["저축","기부"], children: [
-          { title:"기부하기 (1만원)", icon:"🎁", chips:["10,000원"] },
-          { title:"40만원 다시 모으기", icon:"🏦", chips:["400,000원"] },
-        ]},
-        { title:"공부", icon:"📚", chips:["습관","영어"], children:[
-          { title:"글씨 잘쓰기", icon:"✍️", children:[
-            { title:"수학식 잘쓰기", icon:"➗" },
-            { title:"글씨 잘쓰기", icon:"🖊️" },
+        { title: "건강", icon: "💪", chips: ["운동","습관"], children: [
+          { title: "농구다니기", icon: "🏀", children: [
+            { title: "친구랑 농구 많이 해보기", icon: "🤝" },
           ]},
-          { title:"공부로 엄마와 싸우지 않기", icon:"🕊️" },
-          { title:"영어", icon:"🇺🇸", children:[
-            { title:"영어단어 100점 많이 받기", icon:"💯" },
-            { title:"영어 레벨업", icon:"🆙" },
+          { title: "간식줄이기", icon: "🍪" },
+          { title: "다이어트하기 (50kg 이하로 빼기)", icon: "⚖️", chips: ["≤ 50kg"] },
+        ]},
+        { title: "돈", icon: "💰", chips: ["저축","기부"], children: [
+          { title: "기부하기 (1만원)", icon: "🎁", chips: ["10,000원"] },
+          { title: "40만원 다시 모으기", icon: "🏦", chips: ["400,000원"] },
+        ]},
+        { title: "공부", icon: "📚", chips: ["습관","영어"], children: [
+          { title: "글씨 잘쓰기", icon: "✍️", children: [
+            { title: "수학식 잘쓰기", icon: "➗" },
+            { title: "글씨 잘쓰기", icon: "🖊️" },
+          ]},
+          { title: "공부로 엄마와 싸우지 않기", icon: "🕊️" },
+          { title: "영어", icon: "🇺🇸", children: [
+            { title: "영어단어 100점 많이 받기", icon: "💯" },
+            { title: "영어 레벨업", icon: "🆙" },
           ]},
         ]},
-        { title:"놀기", icon:"🧸", chips:["약속","자제"], children:[
-          { title:"약속 잘 지키기", icon:"⏰", children:[
-            { title:"엄마랑 약속한 시간 지키기", icon:"📌" },
+        { title: "놀기", icon: "🧸", chips: ["약속","자제"], children: [
+          { title: "약속 잘 지키기", icon: "⏰", children: [
+            { title: "엄마랑 약속한 시간 지키기", icon: "📌" },
           ]},
-          { title:"게임 외 다른 놀이하기", icon:"🎲" },
-          { title:"핫스팟 켜주지 않기", icon:"📵" },
+          { title: "게임 외 다른 놀이하기", icon: "🎲" },
+          { title: "핫스팟 켜주지 않기", icon: "📵" },
         ]},
-        { title:"가족", icon:"👨‍👩‍👦‍👦", chips:["관계","응원"], children:[
-          { title:"엄마/아빠랑 다투지 않기", icon:"🤝" },
-          { title:"형이랑 다투지 않기", icon:"🫂" },
-          { title:"여행 참기", icon:"🧳" },
-          { title:"형 응원해주기", icon:"📣" },
-          { title:"아빠영화관", icon:"🎬", children:[
-            { title:"재미있는 영화선택", icon:"🍿" },
-            { title:"과자도 팔기", icon:"🍫" },
+        { title: "가족", icon: "👨‍👩‍👦‍👦", chips: ["관계","응원"], children: [
+          { title: "엄마/아빠랑 다투지 않기", icon: "🤝" },
+          { title: "형이랑 다투지 않기", icon: "🫂" },
+          { title: "여행 참기", icon: "🧳" },
+          { title: "형 응원해주기", icon: "📣" },
+          { title: "아빠영화관", icon: "🎬", children: [
+            { title: "재미있는 영화선택", icon: "🍿" },
+            { title: "과자도 팔기", icon: "🍫" },
           ]},
         ]},
       ],
@@ -225,6 +227,7 @@
     const NODE_H_BASE = 78;
     const CHIP_H = 18;
     const CHIP_PAD = 8;
+
     const R_STEP = isMobile ? 380 : 340;
 
     // -----------------------------
@@ -322,6 +325,7 @@
         }
       }
 
+      // 전역 리펄스
       const ITER = isMobile ? 26 : 22;
       const PADDING = isMobile ? 34 : 30;
       const CENTER_PULL = 0.018;
@@ -403,7 +407,6 @@
       // nodes
       for (const n of nodes) {
         const h = nodeHeight(n);
-
         const ng = el("g", { transform:`translate(${n.x - NODE_W/2}, ${n.y - h/2})` });
         ng.style.cursor = "pointer";
 
@@ -456,41 +459,6 @@
         sub.style.pointerEvents = "none";
         ng.appendChild(sub);
 
-        // fold button (no per-element listeners; delegation handles it)
-        if (n.children && n.children.length > 0) {
-          const bw = 56, bh = 22;
-          const bx = NODE_W - bw - 12;
-          const by = 12;
-
-          const bRect = el("rect", {
-            x:String(bx), y:String(by),
-            width:String(bw), height:String(bh),
-            rx:"10", ry:"10",
-            fill:"rgba(15,23,42,.92)",
-            stroke:"rgba(255,255,255,.14)",
-            "stroke-width":"1.1",
-            "data-ui":"fold",
-            "data-nodeid": n.id
-          });
-          bRect.style.cursor = "pointer";
-          bRect.style.pointerEvents = "all";
-          ng.appendChild(bRect);
-
-          const bText = el("text", {
-            x:String(bx + bw/2),
-            y:String(by + bh/2 + 0.5),
-            "text-anchor":"middle",
-            "dominant-baseline":"middle",
-            fill:"#e5e7eb",
-            "font-size":"11",
-            "data-ui":"foldLabel",
-            "data-nodeid": n.id
-          });
-          bText.textContent = n.collapsed ? "펼치기" : "접기";
-          bText.style.pointerEvents = "none"; // 텍스트 누르면 rect가 타겟 되게
-          ng.appendChild(bText);
-        }
-
         // chips
         const chips = n.chips || [];
         if (chips.length) {
@@ -529,68 +497,10 @@
           });
         }
 
-        // node select (버튼 눌렀을 때는 selection 안 바뀌게 아래 delegation에서 막음)
         ng.addEventListener("click", () => { selectedId = n.id; render(); });
-
         g.appendChild(ng);
       }
     }
-
-    // -----------------------------
-    // Fold toggle by delegation (아이폰 Chrome 안정)
-    // -----------------------------
-    function findFoldTarget(startEl){
-      // SVGElement은 closest가 애매한 경우가 있어 수동으로 위로 탐색
-      let cur = startEl;
-      while (cur && cur !== svg) {
-        if (cur.getAttribute && cur.getAttribute("data-ui") === "fold") return cur;
-        cur = cur.parentNode;
-      }
-      return null;
-    }
-
-    function toggleByNodeId(nodeId){
-      if (!nodeId) return false;
-      const byId = new Map(nodes.map(n => [n.id, n]));
-      const n = byId.get(nodeId);
-      if (!n) return false;
-      n.collapsed = !n.collapsed;
-      render();
-      return true;
-    }
-
-    // pointerup (primary)
-    svg.addEventListener("pointerup", (e) => {
-      const foldEl = findFoldTarget(e.target);
-      if (!foldEl) return;
-      e.stopPropagation();
-      if (e.cancelable) e.preventDefault();
-      toggleByNodeId(foldEl.getAttribute("data-nodeid"));
-    }, { passive:false });
-
-    // touchend (iOS 보험)
-    svg.addEventListener("touchend", (e) => {
-      const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
-      // touch 이벤트에서는 target이 svg로 들어오는 경우가 있어 elementFromPoint로 보강
-      let target = e.target;
-      if (t && document.elementFromPoint) {
-        const elp = document.elementFromPoint(t.clientX, t.clientY);
-        if (elp) target = elp;
-      }
-      const foldEl = findFoldTarget(target);
-      if (!foldEl) return;
-      e.stopPropagation();
-      if (e.cancelable) e.preventDefault();
-      toggleByNodeId(foldEl.getAttribute("data-nodeid"));
-    }, { passive:false });
-
-    // click (마지막 보험)
-    svg.addEventListener("click", (e) => {
-      const foldEl = findFoldTarget(e.target);
-      if (!foldEl) return;
-      e.stopPropagation();
-      toggleByNodeId(foldEl.getAttribute("data-nodeid"));
-    });
 
     // -----------------------------
     // Search / expand-collapse
@@ -601,7 +511,7 @@
     }
     function collapseAll(){
       walk(tree, n => { if (n.depth>0) n.collapsed = true; });
-      tree.collapsed = false;
+      tree.collapsed = false; // 루트는 항상 보이게
       render();
     }
     function expandAll(){
@@ -647,15 +557,9 @@
     }
 
     // -----------------------------
-    // Pan / Zoom (buttons excluded)
+    // Pan / Zoom
     // -----------------------------
     function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-    function isUIInSvgTarget(t){
-      if (!t || !t.getAttribute) return false;
-      const ui = t.getAttribute("data-ui");
-      return ui === "fold" || ui === "foldLabel";
-    }
 
     svg.addEventListener("wheel", (e) => {
       e.preventDefault();
@@ -687,8 +591,6 @@
     }
 
     svg.addEventListener("pointerdown", (e) => {
-      if (isUIInSvgTarget(e.target)) return;
-
       try { svg.setPointerCapture(e.pointerId); } catch {}
       activePtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
@@ -744,7 +646,7 @@
     svg.addEventListener("pointerup", endPointer, { passive:false });
     svg.addEventListener("pointercancel", endPointer, { passive:false });
 
-    // Touch fallback
+    // touch fallback (iOS 안전망)
     let tPan = null, tPinch = null;
     function getTouchMid(t1, t2){
       const rect = svg.getBoundingClientRect();
@@ -757,8 +659,6 @@
       return Math.hypot(p0.x-p1.x, p0.y-p1.y);
     }
     svg.addEventListener("touchstart", (e) => {
-      if (isUIInSvgTarget(e.target)) return;
-
       if (e.touches.length === 1) {
         const t = e.touches[0];
         tPan = { x: t.clientX, y: t.clientY, vx: view.x, vy: view.y };
