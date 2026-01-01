@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>26년 가족 마인드맵 - 아빠(김기성)</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#101826;
+      --panel2:#0f172a;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --line:#334155;
+      --accent:#fb923c; /* 오렌지 */
+      --chip:#1f2937;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", Segoe UI, Roboto, Arial, "Helvetica Neue", sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(251,146,60,.18), transparent 55%),
+                  radial-gradient(1000px 600px at 80% 20%, rgba(56,189,248,.12), transparent 60%),
+                  var(--bg);
+      overflow:hidden;
+    }
+
+    /* Top bar */
+    .topbar{
+      position:fixed;
+      left:16px; right:16px; top:14px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      z-index:5;
+    }
+    .brand{
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(16,24,38,.72);
+      backdrop-filter: blur(10px);
+      border-radius:14px;
+      box-shadow: var(--shadow);
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      min-width: 260px;
+    }
+    .brand h1{
+      font-size:14px; margin:0; font-weight:700; letter-spacing:-.2px;
+    }
+    .brand small{color:var(--muted); font-size:12px}
+    .controls{
+      flex:1;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:flex; gap:8px; align-items:center;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(16,24,38,.72);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .pill label{font-size:12px; color:var(--muted)}
+    .pill input{
+      width:220px;
+      padding:8px 10px;
+      background: rgba(15,23,42,.9);
+      color: var(--text);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:10px;
+      outline:none;
+    }
+    .btn{
+      cursor:pointer;
+      user-select:none;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(15,23,42,.92);
+      color:var(--text);
+      padding:9px 10px;
+      border-radius:12px;
+      font-size:12px;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+    }
+    .btn:hover{border-color: rgba(251,146,60,.45); background: rgba(30,41,59,.92)}
+    .btn:active{transform: translateY(1px)}
+    
+
+    .mobile-only{ display:none; }
+.hint{
+      position: fixed;
+      left: 16px;
+      bottom: 14px;
+      z-index: 5;
+      font-size: 12px;
+      color: var(--muted);
+      background: rgba(16,24,38,.62);
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 10px 12px;
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      max-width: 460px;
+      line-height: 1.4;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(15,23,42,.9);
+      color: var(--text);
+      display:inline-block;
+      margin: 0 2px;
+    }
+
+    /* Canvas */
+    #viewport{
+      position:absolute;
+      inset:0;
+      padding-top: 64px;
+    }
+    svg{width:100%; height:100%;}
+    .link{
+      stroke: rgba(148,163,184,.45);
+      stroke-width: 2.2;
+      fill: none;
+    }
+
+    /* Node (SVG foreignObject -> HTML card) */
+    .node-card{
+      width: 260px;
+      padding: 12px 12px 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(16,24,38,.92), rgba(15,23,42,.92));
+      box-shadow: 0 16px 35px rgba(0,0,0,.35);
+      color: var(--text);
+      position: relative;
+      overflow:hidden;
+    }
+    .node-card::before{
+      content:"";
+      position:absolute; inset:-1px;
+      border-radius: 18px;
+      background: radial-gradient(400px 140px at 20% 0%, rgba(251,146,60,.16), transparent 60%),
+                  radial-gradient(320px 140px at 80% 0%, rgba(56,189,248,.12), transparent 60%);
+      pointer-events:none;
+    }
+    .node-head{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+    .badge{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(251,146,60,.14);
+      border: 1px solid rgba(251,146,60,.35);
+      flex: 0 0 auto;
+      font-size: 16px;
+    }
+    .title{
+      margin:0;
+      font-weight:800;
+      letter-spacing:-.3px;
+      line-height:1.15;
+      font-size: 14px;
+    }
+    .subtitle{
+      margin:4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.25;
+    }
+    .meta{
+      margin-top: 10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      position:relative;
+      z-index:1;
+    }
+    .chip{
+      font-size: 11px;
+      color: var(--text);
+      background: rgba(31,41,55,.72);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .chip.muted{color: var(--muted)}
+    .chip.accent{
+      background: rgba(251,146,60,.12);
+      border-color: rgba(251,146,60,.35);
+    }
+
+    .node-card.selected{
+      outline: 2px solid rgba(251,146,60,.55);
+      box-shadow: 0 20px 45px rgba(0,0,0,.45);
+    }
+
+    /* Little fold button */
+    .fold{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .fold button{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(15,23,42,.92);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+    .fold button:hover{
+      border-color: rgba(251,146,60,.45);
+    }
+
+    /* Search highlight */
+    .highlight{
+      outline: 2px solid rgba(56,189,248,.65);
+    }
+
+    /* Mobile */
+    @media (max-width: 720px){
+      .brand{min-width: 0}
+      .pill input{width: 140px}
+      .hint{max-width: calc(100vw - 32px)}
+      .node-card{width: 240px}
+    }
+  @media (max-width: 560px){
+      .mobile-only{ display:inline-flex; }
+      .topbar{ gap:10px; left:12px; right:12px; top:12px; }
+      .brand{ padding:9px 10px; border-radius:14px; }
+      .brand h1{ font-size:13px; }
+      .controls{
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        top: 60px;
+        padding: 10px;
+        gap: 8px;
+        border-radius: 16px;
+        background: rgba(16,24,38,.92);
+        border: 1px solid rgba(255,255,255,.08);
+        box-shadow: 0 16px 35px rgba(0,0,0,.35);
+        transform: translateY(-140%);
+        transition: transform .25s ease;
+        z-index: 6;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+      .controls.open{ transform: translateY(0); }
+      .pill{ width: 100%; }
+      .pill input{ width: 100%; }
+      .btn{ flex: 1 1 auto; }
+      .hint{ display:none; }
+      #viewport{ padding-top: 54px; }
+    }
+
+</style>
+
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <h1>26년 가족 마인드맵</h1>
+      <small>아빠(김기성) · 인터랙티브</small>
+    </div>
+
+
+    <button class="btn mobile-only" id="toggleControls" aria-label="컨트롤 열기/닫기">☰</button>
+
+    <div class="controls">
+      <div class="pill">
+        <label for="q">검색</label>
+        <input id="q" type="text" placeholder="예: 스트레칭, 라퓨타, 제주도..." />
+      </div>
+      <button class="btn" id="expandAll">전체 펼치기</button>
+      <button class="btn" id="collapseAll">전체 접기</button>
+      <button class="btn" id="resetView">뷰 리셋</button>
+    </div>
+  </div>
+
+  <div id="viewport">
+    <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div class="hint">
+    📱 모바일: 두 손으로 확대 · 드래그 이동 · 노드 버튼으로 접기/펴기
+  </div>
+
+  <script>
+    // -----------------------------
+    // Data (your mindmap)
+    // -----------------------------
+    const data = {
+      title: "아빠(김기성)",
+      note: "2026",
+      icon: "👨‍💼",
+      children: [
+        {
+          title: "건강",
+          icon: "🧘‍♂️",
+          chips: ["루틴", "체력", "지속"],
+          children: [
+            { title: "스트레칭", icon: "🤸", chips: ["하루 10~15분"] },
+            { title: "아침 러닝", icon: "🏃‍♂️", chips: ["2km"] },
+            { title: "헬스장", icon: "🏋️", chips: ["일주 2회"] },
+            { title: "골프", icon: "⛳", chips: ["일주 2회"] },
+          ],
+        },
+        {
+          title: "가족",
+          icon: "👨‍👩‍👦",
+          chips: ["기억", "함께", "경험"],
+          children: [
+            { title: "아빠영화관", icon: "🎬", chips: ["기억남는 영화 고르기"] },
+            { title: "마라톤", icon: "🏁", chips: ["5km w.윤후"] },
+            {
+              title: "여행",
+              icon: "🧳",
+              chips: ["국내 여행 위주"],
+              children: [
+                { title: "부여/원주/속초", icon: "🗺️" },
+                { title: "제주도", icon: "🌋" },
+                { title: "국내여행 2회", icon: "📅", chips: ["봄 & 가을"] },
+              ],
+            },
+          ],
+        },
+        {
+          title: "회사",
+          icon: "🏢",
+          chips: ["성과", "조직", "목표"],
+          children: [
+            { title: "25년보다 나은 26년", icon: "📈" },
+            { title: "새로운 서비스 구상 및 릴리즈", icon: "🚀" },
+            { title: "조직/사람/목표", icon: "🧩" },
+          ],
+        },
+        {
+          title: "공부",
+          icon: "📚",
+          chips: ["언어", "루틴", "취향"],
+          children: [
+            {
+              title: "일본어",
+              icon: "🇯🇵",
+              chips: ["꾸준히", "노출량"],
+              children: [
+                {
+                  title: "책 읽기",
+                  icon: "📖",
+                  chips: ["소설/라퓨타/도라에몽"],
+                },
+                { title: "EBS 수업듣기", icon: "📺" },
+                { title: "1:1 수업 열심히", icon: "🗣️" },
+                { title: "라퓨타 3번 이상 보기", icon: "🏰" },
+                { title: "미친맛집 보기", icon: "🍜" },
+              ],
+            },
+            {
+              title: "영어",
+              icon: "🇺🇸",
+              chips: ["회화", "노출량"],
+              children: [
+                { title: "영어회화 w. Mayla", icon: "🗨️" },
+                { title: "알라딘 3번 이상 보기", icon: "🧞" },
+              ],
+            },
+          ],
+        },
+        {
+          title: "넥스트",
+          icon: "🚀",
+          chips: ["출력", "실험", "기록"],
+          children: [
+            { title: "브런치 글쓰기", icon: "✍️", chips: ["1회/월"] },
+            { title: "광고서비스 만들기", icon: "📣", chips: ["1회/2개월"] },
+            { title: "AI 가이드 만들기", icon: "🤖", chips: ["1회/월"] },
+          ],
+        },
+        {
+          title: "재테크",
+          icon: "💰",
+          chips: ["현금흐름", "분산", "규율"],
+          children: [
+            { title: "배당주 중심으로 미장투자", icon: "🇺🇸", chips: ["Dividend"] },
+            { title: "가치주/단타 국장투자", icon: "🇰🇷", chips: ["Value", "Trading"] },
+          ],
+        },
+      ],
+    };
+
+    // -----------------------------
+    // Lightweight mindmap renderer (SVG)
+    // - Layout: radial by depth with simple clustering per branch
+    // - Pan/Zoom
+    // - Collapse/Expand
+    // - Search highlight
+    // -----------------------------
+    const svg = document.getElementById("svg");
+    const qInput = document.getElementById("q");
+    const expandAllBtn = document.getElementById("expandAll");
+    const collapseAllBtn = document.getElementById("collapseAll");
+    const resetViewBtn = document.getElementById("resetView");
+
+    
+
+    const isMobile = window.matchMedia("(max-width: 560px)").matches;
+
+
+// Mobile: controls panel toggle
+const toggleBtn = document.getElementById("toggleControls");
+const controlsEl = document.querySelector(".controls");
+toggleBtn?.addEventListener("click", () => {
+  controlsEl?.classList.toggle("open");
+});
+// State
+    let nodes = [];
+    let links = [];
+    let selectedId = null;
+    let highlightIds = new Set();
+
+    // Pan/zoom state
+    let view = { x: 0, y: 0, k: (isMobile ? 0.7 : 1) };
+    let isPanning = false;
+    let panStart = { x: 0, y: 0, vx: 0, vy: 0 };
+
+    const NODE_W = 260;
+    const NODE_H = 92; // base; expands with chips
+    const R_STEP = 220; // radius step per depth
+
+    function uid() { return Math.random().toString(36).slice(2, 10); }
+
+    function enrichTree(root, parent=null, depth=0, path="") {
+      const id = uid();
+      const node = {
+        id,
+        title: root.title,
+        note: root.note || "",
+        icon: root.icon || "•",
+        chips: root.chips || [],
+        parentId: parent ? parent.id : null,
+        depth,
+        path: path ? `${path} › ${root.title}` : root.title,
+        collapsed: root.collapsed || false,
+        children: (root.children || []).map(ch => enrichTree(ch, { id }, depth+1, path ? `${path} › ${root.title}` : root.title)),
+        _raw: root,
+        x: 0,
+        y: 0,
+        branchIndex: 0,
+      };
+      return node;
+    }
+
+    // Flatten visible nodes
+    function flattenVisible(node, arr=[], parent=null) {
+      arr.push(node);
+      if (!node.collapsed && node.children) {
+        for (const ch of node.children) flattenVisible(ch, arr, node);
+      }
+      return arr;
+    }
+
+    function buildLinks(visibleNodes) {
+      const byId = new Map(visibleNodes.map(n => [n.id, n]));
+      const l = [];
+      for (const n of visibleNodes) {
+        if (n.parentId && byId.has(n.parentId)) {
+          l.push({ source: byId.get(n.parentId), target: n });
+        }
+      }
+      return l;
+    }
+
+    function countLeaves(node) {
+      if (!node.children || node.children.length === 0) return 1;
+      if (node.collapsed) return 1;
+      return node.children.reduce((sum, ch) => sum + countLeaves(ch), 0);
+    }
+
+    // Radial layout per top-level branch; distribute angles by leaf counts
+    function layout(root) {
+      const visible = flattenVisible(root, []);
+      // assign branchIndex (top-level child index)
+      const topChildren = root.children || [];
+      const leafCounts = topChildren.map(ch => countLeaves(ch));
+      const totalLeaves = leafCounts.reduce((a,b)=>a+b, 0) || 1;
+
+      let angleStart = -Math.PI * 0.85; // left-ish
+      const angleSpan = Math.PI * 1.7;  // wrap around
+
+      const branchAngles = [];
+      for (let i=0;i<topChildren.length;i++){
+        const portion = leafCounts[i] / totalLeaves;
+        const a0 = angleStart;
+        const a1 = angleStart + angleSpan * portion;
+        branchAngles.push({ mid: (a0+a1)/2, a0, a1 });
+        angleStart = a1;
+      }
+
+      // center
+      root.x = 0; root.y = 0;
+      root.branchIndex = -1;
+
+      // place each branch recursively
+      for (let i=0;i<topChildren.length;i++){
+        placeBranch(topChildren[i], branchAngles[i].a0, branchAngles[i].a1, 1, i);
+      }
+
+      // small function to distribute children within branch angle window
+      function placeBranch(node, a0, a1, depth, branchIndex){
+        node.branchIndex = branchIndex;
+        const mid = (a0 + a1) / 2;
+        const r = depth * R_STEP;
+        node.x = Math.cos(mid) * r;
+        node.y = Math.sin(mid) * r;
+
+        if (!node.children || node.children.length === 0 || node.collapsed) return;
+
+        // allocate sub-angles proportional to leaves
+        const leaves = node.children.map(ch => countLeaves(ch));
+        const tot = leaves.reduce((a,b)=>a+b,0) || 1;
+        let cur = a0;
+        for (let j=0;j<node.children.length;j++){
+          const span = (a1 - a0) * (leaves[j]/tot);
+          const na0 = cur;
+          const na1 = cur + span;
+          placeBranch(node.children[j], na0, na1, depth+1, branchIndex);
+          cur = na1;
+        }
+      }
+
+      return visible;
+    }
+
+    // Render
+    function render() {
+      // Clear
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+      // Main group with transform
+      const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+      g.setAttribute("id","gMain");
+      g.setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`);
+      svg.appendChild(g);
+
+      // Layout
+      nodes = layout(tree);
+      links = buildLinks(nodes);
+
+      // Links
+      for (const l of links) {
+        const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+        path.setAttribute("class","link");
+        // curved cubic
+        const x1 = l.source.x, y1 = l.source.y;
+        const x2 = l.target.x, y2 = l.target.y;
+        const dx = (x2 - x1) * 0.35;
+        const dy = (y2 - y1) * 0.35;
+        const d = `M ${x1} ${y1} C ${x1+dx} ${y1+dy}, ${x2-dx} ${y2-dy}, ${x2} ${y2}`;
+        path.setAttribute("d", d);
+        g.appendChild(path);
+      }
+
+      // Nodes
+      for (const n of nodes) {
+        const fo = document.createElementNS("http://www.w3.org/2000/svg","foreignObject");
+        const w = NODE_W;
+        const h = nodeHeight(n);
+        fo.setAttribute("x", n.x - w/2);
+        fo.setAttribute("y", n.y - h/2);
+        fo.setAttribute("width", w);
+        fo.setAttribute("height", h);
+
+        const div = document.createElement("div");
+        div.className = "node-card";
+        if (n.id === selectedId) div.classList.add("selected");
+        if (highlightIds.has(n.id)) div.classList.add("highlight");
+
+        // Header
+        const head = document.createElement("div");
+        head.className = "node-head";
+
+        const badge = document.createElement("div");
+        badge.className = "badge";
+        badge.textContent = n.icon || "•";
+
+        const textWrap = document.createElement("div");
+        textWrap.style.minWidth = "0";
+
+        const title = document.createElement("p");
+        title.className = "title";
+        title.textContent = n.title;
+
+        const subtitle = document.createElement("p");
+        subtitle.className = "subtitle";
+        subtitle.textContent = n.note ? n.note : (n.depth===0 ? "2026" : n.path);
+
+        textWrap.appendChild(title);
+        textWrap.appendChild(subtitle);
+
+        const fold = document.createElement("div");
+        fold.className = "fold";
+
+        if (n.children && n.children.length > 0) {
+          const btn = document.createElement("button");
+          btn.textContent = n.collapsed ? "펼치기" : "접기";
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            n.collapsed = !n.collapsed;
+            render();
+          });
+          fold.appendChild(btn);
+        }
+
+        head.appendChild(badge);
+        head.appendChild(textWrap);
+        head.appendChild(fold);
+
+        div.appendChild(head);
+
+        // Chips
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const chips = Array.isArray(n.chips) ? n.chips : [];
+        // For root, show some overall chips
+        if (n.depth === 0) {
+          makeChip(meta, "건강·가족·회사·공부·넥스트·재테크", true);
+          makeChip(meta, "드래그/줌/검색 가능", false);
+        }
+        for (let i=0;i<chips.length;i++){
+          makeChip(meta, chips[i], /\/|회|km|월|주|번|w\./i.test(chips[i]));
+        }
+        div.appendChild(meta);
+
+        // Click select
+        div.addEventListener("click", () => {
+          selectedId = n.id;
+          render();
+        });
+
+        fo.appendChild(div);
+        g.appendChild(fo);
+      }
+    }
+
+    function makeChip(container, text, accent=false){
+      const span = document.createElement("span");
+      span.className = "chip" + (accent ? " accent" : "");
+      span.textContent = text;
+      container.appendChild(span);
+    }
+
+    function nodeHeight(n){
+      const chips = (n.depth===0 ? 2 : 0) + (n.chips ? n.chips.length : 0);
+      const rows = Math.ceil(chips / 3); // rough
+      return NODE_H + rows * 22;
+    }
+
+    // -----------------------------
+    // Pan / Zoom
+    // -----------------------------
+    function setTransform(){
+      const g = document.getElementById("gMain");
+      if (g) g.setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`);
+    }
+
+    svg.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const { offsetX, offsetY, deltaY } = e;
+      const scaleFactor = Math.exp(-deltaY * 0.0012);
+
+      // zoom around cursor
+      const k0 = view.k;
+      const k1 = clamp(k0 * scaleFactor, 0.35, 2.2);
+
+      const cx = offsetX;
+      const cy = offsetY;
+
+      // adjust translate so that point under cursor stays under cursor
+      view.x = cx - (cx - view.x) * (k1 / k0);
+      view.y = cy - (cy - view.y) * (k1 / k0);
+      view.k = k1;
+      setTransform();
+    }, { passive:false });
+
+    svg.addEventListener("mousedown", (e) => {
+      // ignore if clicking on node content (foreignObject)
+      // We still allow panning if user clicks background.
+      if (e.target.closest && e.target.closest(".node-card")) return;
+      isPanning = true;
+      if (isMobile) controlsEl?.classList.remove("open");
+      panStart = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
+    });
+    window.addEventListener("mousemove", (e) => {
+      if (!isPanning) return;
+      const dx = e.clientX - panStart.x;
+      const dy = e.clientY - panStart.y;
+      view.x = panStart.vx + dx;
+      view.y = panStart.vy + dy;
+      setTransform();
+    });
+    window.addEventListener("mouseup", () => { isPanning = false; });
+
+    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+    function resetView(){
+      const rect = svg.getBoundingClientRect();
+      view.k = (isMobile ? 0.7 : 1);
+      view.x = rect.width/2;
+      view.y = rect.height/2 + 40;
+      setTransform();
+    }
+
+    // -----------------------------
+    // Collapse / Expand all
+    // -----------------------------
+    function walk(node, fn){
+      fn(node);
+      if (node.children) node.children.forEach(ch => walk(ch, fn));
+    }
+    function collapseAll(){
+      walk(tree, n => { if (n.depth>0) n.collapsed = true; });
+      tree.collapsed = false;
+      render();
+    }
+    function expandAll(){
+      walk(tree, n => { n.collapsed = false; });
+      render();
+    }
+
+    // -----------------------------
+    // Search
+    // -----------------------------
+    function normalize(s){ return (s||"").toLowerCase(); }
+    function search(query){
+      highlightIds.clear();
+      const q = normalize(query).trim();
+      if (!q) { render(); return; }
+
+      // match title, chips, path
+      for (const n of flattenVisible(tree, [])) {
+        const hay = normalize([n.title, n.path, ...(n.chips||[])].join(" "));
+        if (hay.includes(q)) {
+          highlightIds.add(n.id);
+          // ensure ancestors expanded
+          expandAncestors(n.id);
+        }
+      }
+      render();
+    }
+
+    function findById(node, id){
+      if (node.id === id) return node;
+      if (!node.children) return null;
+      for (const ch of node.children){
+        const r = findById(ch, id);
+        if (r) return r;
+      }
+      return null;
+    }
+
+    function expandAncestors(id){
+      const target = findById(tree, id);
+      if (!target) return;
+      let cur = target;
+      while (cur && cur.parentId) {
+        const p = findById(tree, cur.parentId);
+        if (p) p.collapsed = false;
+        cur = p;
+      }
+    }
+
+    // -----------------------------
+    // Init
+    // -----------------------------
+    const tree = enrichTree(data);
+
+    window.addEventListener("resize", () => {
+      resetView();
+      render();
+    });
+
+    expandAllBtn.addEventListener("click", expandAll);
+    collapseAllBtn.addEventListener("click", collapseAll);
+    resetViewBtn.addEventListener("click", () => { resetView(); render(); });
+
+    qInput.addEventListener("input", (e) => search(e.target.value));
+
+    // first paint
+    resetView();
+    render();
+  </script>
+</body>
+</html>

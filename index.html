@@ -1,6 +1,4 @@
-from pathlib import Path
-
-hub_html = r"""<!doctype html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
@@ -196,19 +194,60 @@ hub_html = r"""<!doctype html>
       .brand small{ display:none; }
       .hint{ max-width: calc(100vw - 32px); }
     }
-  </style>
+  @media (max-width: 560px){
+      #viewport{ padding-top: 64px; }
+      iframe{ overscroll-behavior: contain; }
+    }
+
+@media (max-width: 560px){
+      body{ overflow:hidden; }
+      .topbar{
+        left: 12px; right: 12px;
+        top: calc(10px + env(safe-area-inset-top));
+        gap: 10px;
+      }
+      .brand{
+        padding: 9px 10px;
+        border-radius: 14px;
+      }
+      .brand h1{ font-size: 13px; }
+      .brand small{ display:none; }
+
+      .selectWrap{
+        padding: 9px 10px;
+      }
+      select{
+        min-width: 140px;
+        padding: 11px 38px 11px 12px; /* thumb friendly */
+        font-size: 13px;
+      }
+      .btn{
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+      #viewport{
+        padding-top: calc(62px + env(safe-area-inset-top));
+      }
+      .hint{
+        display:none;
+      }
+    }
+
+</style>
+
+
 </head>
 <body>
   <div class="topbar">
     <div class="brand">
       <h1>26년 가족 마인드맵</h1>
-      <small id="who">아빠</small>
+      <small id="who">엄마</small>
     </div>
 
     <div class="controls">
       <div class="tabs" role="tablist" aria-label="가족 선택">
-        <button class="tab active" data-key="father" role="tab" aria-selected="true">아빠</button>
-        <button class="tab" data-key="mom" role="tab" aria-selected="false">엄마</button>
+        <button class="tab active" data-key="mom" role="tab" aria-selected="true">엄마</button>
+        <button class="tab" data-key="father" role="tab" aria-selected="false">아빠</button>
         <button class="tab" data-key="yoonwan" role="tab" aria-selected="false">윤완</button>
         <button class="tab" data-key="yoonhoo" role="tab" aria-selected="false">윤후</button>
       </div>
@@ -216,8 +255,8 @@ hub_html = r"""<!doctype html>
       <div class="selectWrap">
         <label for="picker">보기</label>
         <select id="picker" aria-label="가족 선택">
+          <option value="mom" selected>엄마</option>
           <option value="father">아빠</option>
-          <option value="mom">엄마</option>
           <option value="yoonwan">윤완</option>
           <option value="yoonhoo">윤후</option>
         </select>
@@ -239,11 +278,12 @@ hub_html = r"""<!doctype html>
   <script>
     // ✅ 같은 폴더에 아래 파일명이 있어야 합니다.
     const MAPS = {
-      father:  { label: "아빠", file: "mindmap26_father.html" },
-      mom:     { label: "엄마", file: "mindmap26_gomsoon.html" },
-      yoonwan: { label: "윤완", file: "mindmap26_yoonwan.html" },
-      yoonhoo: { label: "윤후", file: "mindmap25_yoonhoo.html" }
-    };
+  father:  { label: "아빠", file: "mindmap26_father_final.html" },
+  mom:     { label: "엄마", file: "mindmap26_gomsoon.html" },
+  yoonwan: { label: "윤완", file: "mindmap26_yoonwan.html" },
+  yoonhoo: { label: "윤후", file: "mindmap26_yoonhoo.html" }
+};
+
 
     const frame = document.getElementById("frame");
     const who = document.getElementById("who");
@@ -299,7 +339,3 @@ hub_html = r"""<!doctype html>
   </script>
 </body>
 </html>
-"""
-out_path = Path("/mnt/data/family_mindmaps_hub.html")
-out_path.write_text(hub_html, encoding="utf-8")
-str(out_path)
