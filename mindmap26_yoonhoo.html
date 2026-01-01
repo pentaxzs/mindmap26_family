@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
   <title>26년 가족 마인드맵 - 윤후</title>
   <style>
     :root{
       --bg:#0b0f14;
       --text:#e5e7eb;
       --muted:#94a3b8;
-      --accent:#fb923c; /* 오렌지 */
+      --accent:#fb923c;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
@@ -21,6 +21,9 @@
                   radial-gradient(1000px 600px at 80% 20%, rgba(56,189,248,.12), transparent 60%),
                   var(--bg);
       overflow:hidden;
+      -webkit-user-select:none;
+      user-select:none;
+      -webkit-touch-callout:none;
     }
 
     .topbar{
@@ -71,6 +74,8 @@
       border:1px solid rgba(255,255,255,.10);
       border-radius:10px;
       outline:none;
+      -webkit-user-select:text;
+      user-select:text;
     }
     .btn{
       cursor:pointer;
@@ -99,7 +104,7 @@
       border-radius: 14px;
       backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
-      max-width: 460px;
+      max-width: 520px;
       line-height: 1.4;
     }
     .kbd{
@@ -115,7 +120,12 @@
     }
 
     #viewport{ position:absolute; inset:0; padding-top: 64px; }
-    svg{ width:100%; height:100%; }
+    svg{
+      width:100%;
+      height:100%;
+      touch-action:none;              /* 핵심 */
+      -ms-touch-action:none;
+    }
     .link{
       stroke: rgba(148,163,184,.45);
       stroke-width: 2.2;
@@ -218,6 +228,9 @@
       .hint{max-width: calc(100vw - 32px)}
       .node-card{width: 240px}
     }
+
+    html, body { overscroll-behavior: none; }
+    #viewport { touch-action: none; }
   </style>
 </head>
 <body>
@@ -230,7 +243,7 @@
     <div class="controls">
       <div class="pill">
         <label for="q">검색</label>
-        <input id="q" type="text" placeholder="예: 다이어트, 영어, 아빠영화관..." />
+        <input id="q" type="text" placeholder="예: 농구, 40만원, 영어, 약속..." />
       </div>
       <button class="btn" id="expandAll">전체 펼치기</button>
       <button class="btn" id="collapseAll">전체 접기</button>
@@ -243,7 +256,7 @@
   </div>
 
   <div class="hint">
-    🖱️ 드래그로 이동 · 휠로 줌 · 노드의 <span class="kbd">접기/펴기</span> 버튼으로 가지 제어 · 검색하면 해당 노드가 하이라이트됨
+    📱 한 손가락 드래그로 이동 · 두 손가락 핀치로 줌 · 노드의 <span class="kbd">접기/펴기</span> 버튼은 눌러서 조작
   </div>
 
   <script>
@@ -258,7 +271,7 @@
         {
           title: "건강",
           icon: "💪",
-          chips: ["운동", "간식", "체중"],
+          chips: ["운동", "습관"],
           children: [
             {
               title: "농구다니기",
@@ -268,46 +281,46 @@
               ],
             },
             { title: "간식줄이기", icon: "🍪" },
-            { title: "다이어트하기 (50kg 이하로 빼기)", icon: "⚖️", chips: ["50kg 이하"] },
+            { title: "다이어트하기 (50kg 이하로 빼기)", icon: "⚖️", chips: ["≤ 50kg"] },
           ],
         },
         {
           title: "돈",
           icon: "💰",
-          chips: ["기부", "저축"],
+          chips: ["저축", "기부"],
           children: [
-            { title: "기부하기 (1만원)", icon: "❤️", chips: ["10,000원"] },
-            { title: "40만원 다시 모으기", icon: "🐷", chips: ["400,000원"] },
+            { title: "기부하기 (1만원)", icon: "🎁", chips: ["10,000원"] },
+            { title: "40만원 다시 모으기", icon: "🏦", chips: ["400,000원"] },
           ],
         },
         {
           title: "공부",
           icon: "📚",
-          chips: ["습관", "영어", "글씨"],
+          chips: ["습관", "영어"],
           children: [
             {
               title: "글씨 잘쓰기",
               icon: "✍️",
               children: [
                 { title: "수학식 잘쓰기", icon: "➗" },
-                { title: "글씨 잘쓰기", icon: "📝" },
+                { title: "글씨 잘쓰기", icon: "🖊️" },
               ],
             },
             { title: "공부로 엄마와 싸우지 않기", icon: "🕊️" },
             {
               title: "영어",
-              icon: "🇬🇧",
+              icon: "🇺🇸",
               children: [
                 { title: "영어단어 100점 많이 받기", icon: "💯" },
-                { title: "영어 레벨업", icon: "⬆️" },
+                { title: "영어 레벨업", icon: "🆙" },
               ],
             },
           ],
         },
         {
           title: "놀기",
-          icon: "🕹️",
-          chips: ["약속", "다른 놀이", "규칙"],
+          icon: "🧸",
+          chips: ["약속", "자제"],
           children: [
             {
               title: "약속 잘 지키기",
@@ -317,24 +330,24 @@
               ],
             },
             { title: "게임 외 다른 놀이하기", icon: "🎲" },
-            { title: "핫스팟 켜주지 않기", icon: "📶" },
+            { title: "핫스팟 켜주지 않기", icon: "📵" },
           ],
         },
         {
           title: "가족",
           icon: "👨‍👩‍👦‍👦",
-          chips: ["다툼 줄이기", "응원", "규칙"],
+          chips: ["관계", "응원"],
           children: [
             { title: "엄마/아빠랑 다투지 않기", icon: "🤝" },
-            { title: "형이랑 다투지 않기", icon: "🧡" },
-            { title: "여행 참기", icon: "🛑" },
+            { title: "형이랑 다투지 않기", icon: "🫂" },
+            { title: "여행 참기", icon: "🧳" },
             { title: "형 응원해주기", icon: "📣" },
             {
               title: "아빠영화관",
               icon: "🎬",
               children: [
-                { title: "재미있는 영화선택", icon: "⭐" },
-                { title: "과자도 팔기", icon: "🍿" },
+                { title: "재미있는 영화선택", icon: "🍿" },
+                { title: "과자도 팔기", icon: "🍫" },
               ],
             },
           ],
@@ -342,10 +355,9 @@
       ],
     };
 
-    // -----------------------------
-    // Renderer (same as others)
-    // -----------------------------
     const svg = document.getElementById("svg");
+    const isMobile = window.matchMedia('(pointer:coarse)').matches || window.matchMedia('(max-width: 560px)').matches;
+
     const qInput = document.getElementById("q");
     const expandAllBtn = document.getElementById("expandAll");
     const collapseAllBtn = document.getElementById("collapseAll");
@@ -356,20 +368,20 @@
     let selectedId = null;
     let highlightIds = new Set();
 
-    // Pan/zoom
+    // Pan/zoom state
     let view = { x: 0, y: 0, k: 1 };
     let isPanning = false;
     let panStart = { x: 0, y: 0, vx: 0, vy: 0 };
 
     const NODE_W = 260;
     const NODE_H = 92;
-    const R_STEP = 280; // spacing
+    const R_STEP = 280;
 
     function uid() { return Math.random().toString(36).slice(2, 10); }
 
     function enrichTree(root, parent=null, depth=0, path="") {
       const id = uid();
-      const node = {
+      return {
         id,
         title: root.title,
         note: root.note || "",
@@ -383,14 +395,11 @@
         x: 0, y: 0,
         branchIndex: 0,
       };
-      return node;
     }
 
     function flattenVisible(node, arr=[]) {
       arr.push(node);
-      if (!node.collapsed && node.children) {
-        for (const ch of node.children) flattenVisible(ch, arr);
-      }
+      if (!node.collapsed && node.children) node.children.forEach(ch => flattenVisible(ch, arr));
       return arr;
     }
 
@@ -398,9 +407,7 @@
       const byId = new Map(visibleNodes.map(n => [n.id, n]));
       const l = [];
       for (const n of visibleNodes) {
-        if (n.parentId && byId.has(n.parentId)) {
-          l.push({ source: byId.get(n.parentId), target: n });
-        }
+        if (n.parentId && byId.has(n.parentId)) l.push({ source: byId.get(n.parentId), target: n });
       }
       return l;
     }
@@ -417,7 +424,6 @@
       return NODE_H + rows * 22;
     }
 
-    // Collision-avoid layout
     function layout(root) {
       const visible = flattenVisible(root, []);
 
@@ -608,9 +614,11 @@
           makeChip(meta, "건강·돈·공부·놀기·가족", true);
           makeChip(meta, "드래그/줌/검색 가능", false);
         }
-        for (const c of (n.chips || [])) makeChip(meta, c, /\/|회|월|번|kg|원|100|레벨|40/i.test(c));
+        for (const c of (n.chips || [])) makeChip(meta, c, /\/|≤|회|월|번|원|kg/i.test(c));
 
         div.appendChild(meta);
+
+        // 카드 탭은 선택으로, 드래그는 화면이동으로 (아래 제스처 핸들러에서 구분)
         div.addEventListener("click", () => { selectedId = n.id; render(); });
 
         fo.appendChild(div);
@@ -622,7 +630,9 @@
       const g = document.getElementById("gMain");
       if (g) g.setAttribute("transform", `translate(${view.x},${view.y}) scale(${view.k})`);
     }
+    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
+    // Mouse wheel zoom (desktop)
     svg.addEventListener("wheel", (e) => {
       e.preventDefault();
       const { offsetX, offsetY, deltaY } = e;
@@ -637,8 +647,166 @@
       setTransform();
     }, { passive:false });
 
+    // -----------------------------
+    // Gesture helpers (중요)
+    // - 카드 위에서도 pan/pinch 허용
+    // - 단, 버튼/인풋 같은 UI는 예외로 클릭 가능
+    // -----------------------------
+    function isUIControlTarget(el){
+      if (!el) return false;
+      return !!el.closest('button, input, textarea, select, label, a');
+    }
+
+    // -----------------------------
+    // Pointer Events (지원 브라우저)
+    // -----------------------------
+    const activePtrs = new Map(); // pointerId -> {x,y}
+    let pinchState = null;        // {k0,x0,y0,dist0}
+
+    function svgPointFromClient(clientX, clientY){
+      const rect = svg.getBoundingClientRect();
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    function dist(a,b){
+      const dx = a.x - b.x, dy = a.y - b.y;
+      return Math.hypot(dx, dy);
+    }
+
+    svg.addEventListener("pointerdown", (e) => {
+      if (isUIControlTarget(e.target)) return; // 버튼/인풋은 그대로 클릭
+
+      try { svg.setPointerCapture(e.pointerId); } catch {}
+      activePtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (activePtrs.size === 1) {
+        isPanning = true;
+        panStart = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
+      } else if (activePtrs.size === 2) {
+        const pts = Array.from(activePtrs.values());
+        const p0 = svgPointFromClient(pts[0].x, pts[0].y);
+        const p1 = svgPointFromClient(pts[1].x, pts[1].y);
+        pinchState = { k0: view.k, x0: view.x, y0: view.y, dist0: dist(p0,p1) };
+        isPanning = false;
+      }
+      e.preventDefault();
+    }, { passive:false });
+
+    svg.addEventListener("pointermove", (e) => {
+      if (!activePtrs.has(e.pointerId)) return;
+      activePtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (activePtrs.size === 1 && isPanning) {
+        const dx = e.clientX - panStart.x;
+        const dy = e.clientY - panStart.y;
+        view.x = panStart.vx + dx;
+        view.y = panStart.vy + dy;
+        setTransform();
+      } else if (activePtrs.size === 2 && pinchState) {
+        const pts = Array.from(activePtrs.values());
+        const p0 = svgPointFromClient(pts[0].x, pts[0].y);
+        const p1 = svgPointFromClient(pts[1].x, pts[1].y);
+        const d1 = dist(p0,p1);
+        if (pinchState.dist0 > 0) {
+          const k1 = clamp(pinchState.k0 * (d1 / pinchState.dist0), 0.35, 2.2);
+
+          const mid = { x: (p0.x + p1.x)/2, y: (p0.y + p1.y)/2 };
+          const k0 = pinchState.k0;
+
+          view.x = mid.x - (mid.x - pinchState.x0) * (k1 / k0);
+          view.y = mid.y - (mid.y - pinchState.y0) * (k1 / k0);
+          view.k = k1;
+          setTransform();
+        }
+      }
+      e.preventDefault();
+    }, { passive:false });
+
+    function endPointer(e){
+      if (!activePtrs.has(e.pointerId)) return;
+      activePtrs.delete(e.pointerId);
+
+      if (activePtrs.size === 0) {
+        isPanning = false;
+        pinchState = null;
+      } else if (activePtrs.size === 1) {
+        const remaining = Array.from(activePtrs.values())[0];
+        isPanning = true;
+        panStart = { x: remaining.x, y: remaining.y, vx: view.x, vy: view.y };
+        pinchState = null;
+      }
+      e.preventDefault();
+    }
+    svg.addEventListener("pointerup", endPointer, { passive:false });
+    svg.addEventListener("pointercancel", endPointer, { passive:false });
+
+    // -----------------------------
+    // Touch Events fallback (특히 iOS/인앱브라우저 대비)
+    // -----------------------------
+    let tPan = null;   // {x,y,vx,vy}
+    let tPinch = null; // {k0,x0,y0,d0}
+
+    function getTouchMid(t1, t2){
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: ((t1.clientX + t2.clientX)/2) - rect.left,
+        y: ((t1.clientY + t2.clientY)/2) - rect.top
+      };
+    }
+    function getTouchDist(t1, t2){
+      const rect = svg.getBoundingClientRect();
+      const p0 = { x: t1.clientX - rect.left, y: t1.clientY - rect.top };
+      const p1 = { x: t2.clientX - rect.left, y: t2.clientY - rect.top };
+      return Math.hypot(p0.x - p1.x, p0.y - p1.y);
+    }
+
+    svg.addEventListener("touchstart", (e) => {
+      if (isUIControlTarget(e.target)) return;
+      if (e.touches.length === 1) {
+        const t = e.touches[0];
+        tPan = { x: t.clientX, y: t.clientY, vx: view.x, vy: view.y };
+        tPinch = null;
+      } else if (e.touches.length === 2) {
+        const d0 = getTouchDist(e.touches[0], e.touches[1]);
+        tPinch = { k0: view.k, x0: view.x, y0: view.y, d0 };
+        tPan = null;
+      }
+      e.preventDefault();
+    }, { passive:false });
+
+    svg.addEventListener("touchmove", (e) => {
+      if (isUIControlTarget(e.target)) return;
+      if (e.touches.length === 1 && tPan) {
+        const t = e.touches[0];
+        view.x = tPan.vx + (t.clientX - tPan.x);
+        view.y = tPan.vy + (t.clientY - tPan.y);
+        setTransform();
+      } else if (e.touches.length === 2 && tPinch) {
+        const d1 = getTouchDist(e.touches[0], e.touches[1]);
+        const k1 = clamp(tPinch.k0 * (d1 / (tPinch.d0 || 1)), 0.35, 2.2);
+
+        const mid = getTouchMid(e.touches[0], e.touches[1]);
+        const k0 = tPinch.k0;
+
+        view.x = mid.x - (mid.x - tPinch.x0) * (k1 / k0);
+        view.y = mid.y - (mid.y - tPinch.y0) * (k1 / k0);
+        view.k = k1;
+        setTransform();
+      }
+      e.preventDefault();
+    }, { passive:false });
+
+    svg.addEventListener("touchend", (e) => {
+      if (e.touches.length === 0) { tPan = null; tPinch = null; }
+      if (e.touches.length === 1) {
+        const t = e.touches[0];
+        tPan = { x: t.clientX, y: t.clientY, vx: view.x, vy: view.y };
+        tPinch = null;
+      }
+    }, { passive:false });
+
+    // Desktop mouse pan
     svg.addEventListener("mousedown", (e) => {
-      if (e.target.closest && e.target.closest(".node-card")) return;
+      if (isUIControlTarget(e.target)) return;
       isPanning = true;
       panStart = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y };
     });
@@ -650,11 +818,9 @@
     });
     window.addEventListener("mouseup", () => { isPanning = false; });
 
-    function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
     function resetView(){
       const rect = svg.getBoundingClientRect();
-      view.k = 1;
+      view.k = (isMobile ? 0.7 : 1);
       view.x = rect.width/2;
       view.y = rect.height/2 + 40;
       setTransform();
