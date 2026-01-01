@@ -3,16 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
-  <title>26년 가족 마인드맵 - 윤후 (SVG 고정 버전)</title>
+  <title>26년 가족 마인드맵 - 윤후 (SVG 최종)</title>
   <style>
     :root{
       --bg:#0b0f14;
       --text:#e5e7eb;
       --muted:#94a3b8;
       --accent:#fb923c;
-      --stroke: rgba(148,163,184,.45);
-      --card: rgba(16,24,38,.92);
-      --card2: rgba(15,23,42,.92);
     }
     *{box-sizing:border-box}
     html, body { height:100%; }
@@ -127,7 +124,7 @@
   <div class="topbar">
     <div class="brand">
       <h1>26년 가족 마인드맵</h1>
-      <small>윤후 · SVG 노드(모바일 줌/이동 완전 적용)</small>
+      <small>윤후 · SVG 노드(모바일 줌/이동/버튼 OK)</small>
     </div>
 
     <div class="controls">
@@ -146,7 +143,7 @@
   </div>
 
   <div class="hint">
-    📱 한 손가락 드래그로 이동 · 두 손가락 핀치로 줌 · 노드의 “접기/펴기” 버튼으로 가지 제어 · (텍스트/노드도 함께 줌/이동됨)
+    📱 한 손가락 드래그로 이동 · 두 손가락 핀치로 줌 · 노드의 “접기/펴기” 버튼 탭 가능 · 겹침 최소화 레이아웃
   </div>
 
   <script>
@@ -256,7 +253,7 @@
     }
 
     // -----------------------------
-    // Tree & layout
+    // State
     // -----------------------------
     const svg = document.getElementById("svg");
     const isMobile = window.matchMedia('(pointer:coarse)').matches || window.matchMedia('(max-width: 560px)').matches;
@@ -269,16 +266,19 @@
     let selectedId = null;
     let highlightIds = new Set();
 
-    // pan/zoom state
     let view = { x: 0, y: 0, k: 1 };
 
-    const NODE_W = 300;   // SVG 노드 폭
+    const NODE_W = 310;
     const NODE_H_BASE = 78;
     const CHIP_H = 18;
     const CHIP_PAD = 8;
 
-    const R_STEP = 300; // 간격(겹침 방지)
+    // 겹침 완화: 반경 간격 확대
+    const R_STEP = isMobile ? 380 : 340;
 
+    // -----------------------------
+    // Tree & Layout
+    // -----------------------------
     function uid() { return Math.random().toString(36).slice(2, 10); }
 
     function enrichTree(root, parent=null, depth=0, path="") {
@@ -333,8 +333,9 @@
       const leafCounts = topChildren.map(ch => countLeaves(ch));
       const totalLeaves = leafCounts.reduce((a,b)=>a+b, 0) || 1;
 
-      let angleStart = -Math.PI * 0.85;
-      const angleSpan = Math.PI * 1.7;
+      // 가지 벌리기
+      let angleStart = -Math.PI * 0.90;
+      const angleSpan = Math.PI * 1.80;
 
       const branchAngles = [];
       for (let i=0;i<topChildren.length;i++){
@@ -371,41 +372,32 @@
         }
       }
 
-      // collision avoidance within each branch (간단 리펄스)
-      const byBranch = new Map();
-      for (const n of visible) {
-        const b = n.branchIndex ?? -1;
-        if (!byBranch.has(b)) byBranch.set(b, []);
-        byBranch.get(b).push(n);
-      }
-
-      const ITER = 16;
-      const PADDING = 26;
-      const CENTER_PULL = 0.02;
+      // 전역 리펄스 (브랜치 간 겹침까지 완화)
+      const ITER = isMobile ? 26 : 22;
+      const PADDING = isMobile ? 34 : 30;
+      const CENTER_PULL = 0.018;
 
       for (let it = 0; it < ITER; it++) {
-        for (const [b, arr] of byBranch.entries()) {
-          const list = arr.filter(n => n.depth !== 0);
-          for (let i = 0; i < list.length; i++) {
-            for (let j = i + 1; j < list.length; j++) {
-              const a = list[i], c = list[j];
-              const ha = nodeHeight(a), hc = nodeHeight(c);
-              const ra = Math.sqrt((NODE_W/2)**2 + (ha/2)**2) + PADDING;
-              const rc = Math.sqrt((NODE_W/2)**2 + (hc/2)**2) + PADDING;
-              const minDist = ra + rc;
+        const list = visible.filter(n => n.depth !== 0);
+        for (let i = 0; i < list.length; i++) {
+          for (let j = i + 1; j < list.length; j++) {
+            const a = list[i], c = list[j];
 
-              let dx = c.x - a.x;
-              let dy = c.y - a.y;
-              let dist = Math.hypot(dx, dy);
+            const ha = nodeHeight(a), hc = nodeHeight(c);
+            const ra = Math.sqrt((NODE_W/2)**2 + (ha/2)**2) + PADDING;
+            const rc = Math.sqrt((NODE_W/2)**2 + (hc/2)**2) + PADDING;
+            const minDist = ra + rc;
 
-              if (dist < 0.0001) { dx = 0.01; dy = -0.01; dist = Math.hypot(dx,dy); }
+            let dx = c.x - a.x;
+            let dy = c.y - a.y;
+            let d = Math.hypot(dx, dy);
+            if (d < 0.0001) { dx = 0.01; dy = -0.01; d = Math.hypot(dx,dy); }
 
-              if (dist < minDist) {
-                const push = (minDist - dist) * 0.5;
-                const ux = dx / dist, uy = dy / dist;
-                a.x -= ux * push; a.y -= uy * push;
-                c.x += ux * push; c.y += uy * push;
-              }
+            if (d < minDist) {
+              const push = (minDist - d) * 0.55;
+              const ux = dx / d, uy = dy / d;
+              a.x -= ux * push; a.y -= uy * push;
+              c.x += ux * push; c.y += uy * push;
             }
           }
         }
@@ -444,7 +436,6 @@
       nodes = layout(tree);
       links = buildLinks(nodes);
 
-      // links
       for (const l of links) {
         const x1 = l.source.x, y1 = l.source.y;
         const x2 = l.target.x, y2 = l.target.y;
@@ -460,27 +451,23 @@
         g.appendChild(p);
       }
 
-      // nodes
       for (const n of nodes) {
         const h = nodeHeight(n);
-
         const ng = el("g", { transform:`translate(${n.x - NODE_W/2}, ${n.y - h/2})` });
         ng.style.cursor = "pointer";
 
         const isSelected = (n.id === selectedId);
         const isHighlight = highlightIds.has(n.id);
 
-        // shadow-ish backdrop
         const bg = el("rect", {
           x:"0", y:"0", width:String(NODE_W), height:String(h),
           rx:"18", ry:"18",
           fill: "rgba(16,24,38,.92)",
-          stroke: isSelected ? "rgba(251,146,60,.65)" : (isHighlight ? "rgba(56,189,248,.75)" : "rgba(255,255,255,.10)"),
-          "stroke-width": isSelected || isHighlight ? "2.2" : "1.2"
+          stroke: isSelected ? "rgba(251,146,60,.70)" : (isHighlight ? "rgba(56,189,248,.80)" : "rgba(255,255,255,.10)"),
+          "stroke-width": isSelected || isHighlight ? "2.3" : "1.2"
         });
         ng.appendChild(bg);
 
-        // icon badge
         const badge = el("rect", {
           x:"12", y:"12", width:"34", height:"34",
           rx:"12", ry:"12",
@@ -498,9 +485,9 @@
           "font-size":"16"
         });
         iconText.textContent = n.icon || "•";
+        iconText.style.pointerEvents = "none";
         ng.appendChild(iconText);
 
-        // title
         const title = el("text", {
           x:"56", y:"26",
           fill:"#e5e7eb",
@@ -508,32 +495,35 @@
           "font-weight":"800"
         });
         title.textContent = n.title;
+        title.style.pointerEvents = "none";
         ng.appendChild(title);
 
-        // subtitle
         const sub = el("text", {
           x:"56", y:"46",
           fill:"rgba(148,163,184,.95)",
           "font-size":"11"
         });
         sub.textContent = n.note ? n.note : (n.depth === 0 ? "2026" : n.path);
+        sub.style.pointerEvents = "none";
         ng.appendChild(sub);
 
-        // fold button (if has children)
+        // ----- 접기/펴기 버튼 (최종: pointerup + touchend로 안정 동작)
         if (n.children && n.children.length > 0) {
-          const bw = 52, bh = 20;
+          const bw = 56, bh = 22;
           const bx = NODE_W - bw - 12;
-          const by = 14;
+          const by = 12;
 
           const bRect = el("rect", {
             x:String(bx), y:String(by),
             width:String(bw), height:String(bh),
             rx:"10", ry:"10",
             fill:"rgba(15,23,42,.92)",
-            stroke:"rgba(255,255,255,.12)",
-            "stroke-width":"1.1"
+            stroke:"rgba(255,255,255,.14)",
+            "stroke-width":"1.1",
+            "data-ui":"fold"
           });
           bRect.style.cursor = "pointer";
+          bRect.style.pointerEvents = "all";
 
           const bText = el("text", {
             x:String(bx + bw/2),
@@ -541,17 +531,32 @@
             "text-anchor":"middle",
             "dominant-baseline":"middle",
             fill:"#e5e7eb",
-            "font-size":"11"
+            "font-size":"11",
+            "data-ui":"foldLabel"
           });
           bText.textContent = n.collapsed ? "펼치기" : "접기";
           bText.style.pointerEvents = "none";
 
-          // 버튼만 별도 클릭 처리
-          bRect.addEventListener("click", (e) => {
+          const toggleFold = (e) => {
             e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
             n.collapsed = !n.collapsed;
             render();
+          };
+
+          // 버튼 누르는 순간부터 제스처(이동/줌)로 안 넘어가게 차단
+          bRect.addEventListener("pointerdown", (e) => {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
           });
+          bRect.addEventListener("pointerup", toggleFold);
+
+          // iOS/webview 보험
+          bRect.addEventListener("touchstart", (e) => {
+            e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+          }, { passive:false });
+          bRect.addEventListener("touchend", toggleFold, { passive:false });
 
           ng.appendChild(bRect);
           ng.appendChild(bText);
@@ -560,25 +565,27 @@
         // chips
         const chips = n.chips || [];
         if (chips.length) {
-          let cx = 12;
-          let cy = 58;
           const perRow = 3;
           const chipW = Math.floor((NODE_W - 24 - (CHIP_PAD*(perRow-1))) / perRow);
 
           chips.forEach((c, i) => {
             const row = Math.floor(i / perRow);
             const col = i % perRow;
-            cx = 12 + col*(chipW + CHIP_PAD);
-            cy = 58 + row*(CHIP_H + 6);
+
+            const cx = 12 + col*(chipW + CHIP_PAD);
+            const cy = 58 + row*(CHIP_H + 6);
+
+            const accent = /≤|kg|원|,|회|월|번/.test(c);
 
             const chipRect = el("rect", {
               x:String(cx), y:String(cy),
               width:String(chipW), height:String(CHIP_H),
               rx:"999", ry:"999",
-              fill: /≤|kg|원|,|회|월|번/.test(c) ? "rgba(251,146,60,.12)" : "rgba(31,41,55,.72)",
-              stroke: /≤|kg|원|,|회|월|번/.test(c) ? "rgba(251,146,60,.35)" : "rgba(255,255,255,.10)",
+              fill: accent ? "rgba(251,146,60,.12)" : "rgba(31,41,55,.72)",
+              stroke: accent ? "rgba(251,146,60,.35)" : "rgba(255,255,255,.10)",
               "stroke-width":"1"
             });
+            chipRect.style.pointerEvents = "none";
             ng.appendChild(chipRect);
 
             const chipText = el("text", {
@@ -590,13 +597,12 @@
               "font-size":"10"
             });
             chipText.textContent = c;
+            chipText.style.pointerEvents = "none";
             ng.appendChild(chipText);
           });
         }
 
-        // node click select
         ng.addEventListener("click", () => { selectedId = n.id; render(); });
-
         g.appendChild(ng);
       }
     }
@@ -657,9 +663,16 @@
     }
 
     // -----------------------------
-    // Pan / Zoom (Pointer + Touch fallback)
+    // Pan / Zoom
+    // - 버튼 탭은 제스처 처리에서 제외(data-ui="fold")
     // -----------------------------
     function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+    function isUIInSvgTarget(t){
+      if (!t || !t.getAttribute) return false;
+      const ui = t.getAttribute("data-ui");
+      return ui === "fold" || ui === "foldLabel";
+    }
 
     // wheel zoom
     svg.addEventListener("wheel", (e) => {
@@ -670,7 +683,7 @@
 
       const scaleFactor = Math.exp(-e.deltaY * 0.0012);
       const k0 = view.k;
-      const k1 = clamp(k0 * scaleFactor, 0.35, 2.4);
+      const k1 = clamp(k0 * scaleFactor, 0.35, 2.6);
 
       view.x = cx - (cx - view.x) * (k1 / k0);
       view.y = cy - (cy - view.y) * (k1 / k0);
@@ -693,6 +706,8 @@
     }
 
     svg.addEventListener("pointerdown", (e) => {
+      if (isUIInSvgTarget(e.target)) return;
+
       try { svg.setPointerCapture(e.pointerId); } catch {}
       activePtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
@@ -723,7 +738,7 @@
         const p1 = svgPointFromClient(pts[1].x, pts[1].y);
         const d1 = dist(p0,p1);
 
-        const k1 = clamp(pinchState.k0 * (d1 / (pinchState.dist0 || 1)), 0.35, 2.4);
+        const k1 = clamp(pinchState.k0 * (d1 / (pinchState.dist0 || 1)), 0.35, 2.6);
         const mid = { x: (p0.x+p1.x)/2, y: (p0.y+p1.y)/2 };
         const k0 = pinchState.k0;
 
@@ -761,6 +776,8 @@
       return Math.hypot(p0.x-p1.x, p0.y-p1.y);
     }
     svg.addEventListener("touchstart", (e) => {
+      if (isUIInSvgTarget(e.target)) return;
+
       if (e.touches.length === 1) {
         const t = e.touches[0];
         tPan = { x: t.clientX, y: t.clientY, vx: view.x, vy: view.y };
@@ -781,7 +798,7 @@
         setTransform();
       } else if (e.touches.length === 2 && tPinch) {
         const d1 = getTouchDist(e.touches[0], e.touches[1]);
-        const k1 = clamp(tPinch.k0 * (d1 / (tPinch.d0 || 1)), 0.35, 2.4);
+        const k1 = clamp(tPinch.k0 * (d1 / (tPinch.d0 || 1)), 0.35, 2.6);
 
         const mid = getTouchMid(e.touches[0], e.touches[1]);
         const k0 = tPinch.k0;
