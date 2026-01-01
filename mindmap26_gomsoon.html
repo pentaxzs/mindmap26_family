@@ -91,7 +91,7 @@
     .hint{
       position: fixed;
       left: 16px;
-      bottom: 14px;
+      bottom: 64px; /* 진행률 바와 겹치지 않게 */
       z-index: 5;
       font-size: 12px;
       color: rgba(148,163,184,.95);
@@ -102,6 +102,47 @@
       backdrop-filter: blur(10px);
       max-width: 560px;
       line-height: 1.4;
+    }
+
+    .progressbar{
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 14px;
+      z-index: 5;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(16,24,38,.72);
+      border: 1px solid rgba(255,255,255,.08);
+      backdrop-filter: blur(10px);
+    }
+    .progressbar .label{
+      font-size: 12px;
+      color: rgba(148,163,184,.95);
+      white-space: nowrap;
+    }
+    .progressbar .track{
+      position: relative;
+      flex:1;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+    .progressbar .fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background: rgba(251,146,60,.75);
+    }
+    .progressbar .meta{
+      font-size: 12px;
+      color: rgba(229,231,235,.95);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
     #viewport{ position:absolute; inset:0; padding-top: 64px; }
@@ -141,6 +182,14 @@
 
   <div class="hint">
     📱 한 손가락 드래그로 이동 · 두 손가락 핀치로 줌 · 상단 버튼으로 전체 접기/펼치기
+  </div>
+
+  <div class="progressbar" id="progressBar" aria-live="polite">
+    <div class="label">진행률</div>
+    <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="fill" id="progressFill"></div>
+    </div>
+    <div class="meta" id="progressMeta">0% (0/0)</div>
   </div>
 
   <script>
@@ -241,6 +290,10 @@
     const collapseAllBtn = document.getElementById("collapseAll");
     const resetViewBtn = document.getElementById("resetView");
 
+    const progressFill = document.getElementById("progressFill");
+    const progressMeta = document.getElementById("progressMeta");
+    const progressTrack = document.querySelector("#progressBar .track");
+
     let selectedId = null;
     // 검색 하이라이트는 더 이상 사용되지 않지만, 렌더 로직을 건드리지 않기 위해 빈 Set 유지
     let highlightIds = new Set();
@@ -257,23 +310,57 @@
     const R_STEP = isMobile ? 380 : 340;
 
     // -----------------------------
+    // 체크박스 상태 (localStorage)
+    // -----------------------------
+    const STORAGE_KEY = "mindmap26_gomsoon_checks_v1";
+    function loadChecks(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const obj = raw ? JSON.parse(raw) : {};
+        return new Map(Object.entries(obj).map(([k,v]) => [k, !!v]));
+      }catch{
+        return new Map();
+      }
+    }
+    function saveChecks(map){
+      try{
+        const obj = Object.fromEntries(map.entries());
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+      }catch{}
+    }
+    const checks = loadChecks();
+
+    function isChecked(key){ return !!checks.get(key); }
+    function setChecked(key, val){
+      checks.set(key, !!val);
+      saveChecks(checks);
+      updateProgress();
+    }
+    function toggleChecked(key){
+      setChecked(key, !isChecked(key));
+      render();
+    }
+
+    // -----------------------------
     // Tree & Layout
     // -----------------------------
     function uid() { return Math.random().toString(36).slice(2, 10); }
 
     function enrichTree(root, parent=null, depth=0, path="") {
       const id = uid();
+      const nextPath = path ? `${path} › ${root.title}` : root.title;
       return {
         id,
+        key: nextPath,               // ✅ 구조 기반 고정 키(진행률/저장용)
         title: root.title,
         note: root.note || "",
         icon: root.icon || "•",
         chips: root.chips || [],
         parentId: parent ? parent.id : null,
         depth,
-        path: path ? `${path} › ${root.title}` : root.title,
+        path: nextPath,
         collapsed: root.collapsed || false,
-        children: (root.children || []).map(ch => enrichTree(ch, { id }, depth+1, path ? `${path} › ${root.title}` : root.title)),
+        children: (root.children || []).map(ch => enrichTree(ch, { id }, depth+1, nextPath)),
         x: 0, y: 0,
         branchIndex: 0,
       };
@@ -395,6 +482,35 @@
     }
 
     // -----------------------------
+    // expand-collapse + 공용 walk
+    // -----------------------------
+    function walk(node, fn){
+      fn(node);
+      (node.children || []).forEach(ch => walk(ch, fn));
+    }
+
+    // -----------------------------
+    // Progress UI
+    // -----------------------------
+    function computeProgress(){
+      let total = 0, done = 0;
+      walk(tree, (n) => {
+        if (n.depth === 0) return; // 루트 제외
+        total += 1;
+        if (isChecked(n.key)) done += 1;
+      });
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      return { total, done, pct };
+    }
+
+    function updateProgress(){
+      const { total, done, pct } = computeProgress();
+      progressFill.style.width = pct + "%";
+      progressMeta.textContent = `${pct}% (${done}/${total})`;
+      if (progressTrack) progressTrack.setAttribute("aria-valuenow", String(pct));
+    }
+
+    // -----------------------------
     // Render
     // -----------------------------
     let tree = enrichTree(data);
@@ -438,6 +554,7 @@
 
         const isSelected = (n.id === selectedId);
         const isHighlight = highlightIds.has(n.id); // 검색 기능 제거로 항상 false
+        const checked = isChecked(n.key);
 
         ng.appendChild(el("rect", {
           x:"0", y:"0", width:String(NODE_W), height:String(h),
@@ -485,6 +602,62 @@
         sub.style.pointerEvents = "none";
         ng.appendChild(sub);
 
+        // ✅ 체크박스 (우상단) - 루트 제외
+        if (n.depth > 0) {
+          const cbX = NODE_W - 40;
+          const cbY = 16;
+          const cbS = 18;
+
+          const cb = el("rect", {
+            x: String(cbX),
+            y: String(cbY),
+            width: String(cbS),
+            height: String(cbS),
+            rx: "5",
+            ry: "5",
+            fill: checked ? "rgba(251,146,60,.26)" : "rgba(15,23,42,.92)",
+            stroke: checked ? "rgba(251,146,60,.70)" : "rgba(255,255,255,.18)",
+            "stroke-width": "1.4"
+          });
+          cb.style.pointerEvents = "auto";
+          cb.style.cursor = "pointer";
+
+          const tick = el("text", {
+            x: String(cbX + cbS/2),
+            y: String(cbY + cbS/2 + 0.5),
+            "text-anchor":"middle",
+            "dominant-baseline":"middle",
+            fill: checked ? "rgba(251,146,60,.95)" : "rgba(148,163,184,.25)",
+            "font-size":"14",
+            "font-weight":"900"
+          });
+          tick.textContent = "✓";
+          tick.style.pointerEvents = "auto";
+          tick.style.cursor = "pointer";
+
+          const toggle = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleChecked(n.key);
+          };
+
+          // ✅ pan/zoom 포인터 캡처보다 먼저 이벤트를 "먹어서" 체크가 안 되는 문제 방지 (특히 iOS)
+          const swallow = (e) => { e.preventDefault(); e.stopPropagation(); };
+
+          cb.addEventListener("pointerdown", swallow);
+          tick.addEventListener("pointerdown", swallow);
+          cb.addEventListener("touchstart", swallow, { passive:false });
+          tick.addEventListener("touchstart", swallow, { passive:false });
+
+          cb.addEventListener("pointerup", toggle);
+          tick.addEventListener("pointerup", toggle);
+          cb.addEventListener("click", toggle);
+          tick.addEventListener("click", toggle);
+
+          ng.appendChild(cb);
+          ng.appendChild(tick);
+        }
+
         // chips
         const chips = n.chips || [];
         if (chips.length) {
@@ -528,15 +701,13 @@
 
         g.appendChild(ng);
       }
+
+      updateProgress();
     }
 
     // -----------------------------
     // expand-collapse
     // -----------------------------
-    function walk(node, fn){
-      fn(node);
-      (node.children || []).forEach(ch => walk(ch, fn));
-    }
     function collapseAll(){
       walk(tree, n => { if (n.depth>0) n.collapsed = true; });
       tree.collapsed = false;
